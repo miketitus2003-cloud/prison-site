@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  BookOpen,
   ExternalLink,
   FileText,
   Github,
@@ -14,51 +15,62 @@ import {
   X,
 } from "lucide-react";
 
+type LinkItem = { label: string; href: string };
 type Slide = { src: string; caption: string };
+type PolicyCard = {
+  title: string;
+  icon: React.ElementType;
+  oneLine: string;
+  bullets: string[];
+  bottomLine: string;
+  pdfHref?: string; // put a /docs/... link here if you have it
+};
 
 const CONTENT = {
-  siteTitle: "Prison Education and Recidivism",
-  subTitle: "Research brief + policy notes",
-  tagline:
-    "I studied how post-release employment (a proxy for education and reentry support) relates to recidivism, then added short, readable policy notes on youth sentencing and solitary confinement.",
+  title: "Prison Education and Recidivism",
+  subtitle: "Research brief + policy notes",
+  authorLine: "Michael Parham",
+  abstract:
+    "Using post-release employment as a proxy for education and reentry support, I tested how employment, offense type, and time served relate to recidivism. The policy notes connect the research to youth punishment and solitary confinement.",
   links: {
     githubProfile: "https://github.com/miketitus2003-cloud",
-    recidivismRepo:
-      "https://github.com/miketitus2003-cloud/prison-education-recidivism-analysis-standalone",
-    // Optional: add PDFs later (drop into public/docs)
-    deathPenaltyPdf: "", // example: "/docs/teens-death-penalty.pdf"
-    solitaryPdf: "", // example: "/docs/solitary-confinement.pdf"
+    repo: "https://github.com/miketitus2003-cloud/prison-education-recidivism-analysis-standalone",
   },
 
-  highlights: [
-    { label: "Re-arrest rate", value: "62% within 3 years", note: "34 states, 2012" },
-    { label: "Education effect", value: "43% lower odds", note: "linked to less reoffending" },
+  stats: [
+    { label: "Re-arrest rate", value: "62% within 3 years", note: "34 states, 2012 cohort" },
+    { label: "Education link", value: "43% lower odds", note: "reported in prior research" },
     { label: "Proxy used here", value: "Employment after release", note: "measurable reentry signal" },
   ],
 
   research: {
-    title: "Research brief",
-    overview:
-      "Correctional education is linked to lower recidivism, but public datasets often do not track program type, time in program, or dosage. To keep the analysis measurable, I used employment after release as a proxy for education and reentry support.",
-    question:
-      "What is the relationship between employment (proxy), offense type, time served, and recidivism?",
+    sections: [
+      {
+        title: "Why this topic matters",
+        body: [
+          "Recidivism is not just a number. It affects people, families, and community safety.",
+          "Education in prison is linked to lower recidivism, but many public datasets do not track program type, time in program, or dosage.",
+          "To keep the analysis measurable, I used employment after release as a proxy for education and reentry support.",
+        ],
+      },
+      {
+        title: "Research question",
+        body: ["What is the relationship between employment (proxy), offense type, time served, and recidivism?"],
+      },
+    ],
     method: [
       "Outcome: recidivism (1 = reoffended, 0 = did not)",
       "Predictors: employed (yes/no), offense type (violent vs drug), time served (years)",
       "Model: logistic regression (statsmodels Logit) in Python",
+      "Data: simulated dataset modeled on national patterns (directional illustration, not causal estimate)",
     ],
-    results: [
+    keyFindings: [
       "Employed after release was associated with a much lower likelihood of reoffending",
       "Violent offense type was associated with a higher likelihood of return",
       "Time served was not statistically significant in this run",
     ],
-    limitations: [
-      "This run uses simulated data modeled on national patterns, so it illustrates direction of effects, not causality",
-      "Employment is a proxy, not a direct measurement of education participation",
-      "Real-world replication needs program participation data plus richer controls",
-    ],
     implications: [
-      "Policy focus should move from sentence length to in-prison programming and reentry support",
+      "Shift attention from sentence length to in-prison programming and reentry support",
       "Programs that improve job outcomes can reduce returns and improve community safety",
     ],
     nextSteps: [
@@ -66,35 +78,34 @@ const CONTENT = {
       "Test with state or local administrative records",
       "Include parole status, demographics, and support systems",
     ],
-    sources: ["BJS (2013, 2018, 2021)", "RAND (2013)"],
+    // You have slides 01-07 in public/assets already
     slides: [
       { src: "/assets/slide_01.png", caption: "Project title" },
-      { src: "/assets/slide_02.png", caption: "Why it matters and why employment is a proxy" },
+      { src: "/assets/slide_02.png", caption: "Background and motivation" },
       { src: "/assets/slide_03.png", caption: "Research question and variables" },
-      { src: "/assets/slide_04.png", caption: "Method: logistic regression (Logit)" },
+      { src: "/assets/slide_04.png", caption: "Method overview (Logit model)" },
       { src: "/assets/slide_05.png", caption: "Results summary" },
       { src: "/assets/slide_06.png", caption: "Implications and next steps" },
-    { src: "/assets/slide_07.png", caption: "Slide 7" },
+      { src: "/assets/slide_07.png", caption: "Slide 7" },
     ] as Slide[],
   },
 
   policy: {
-    title: "Policy notes",
-    subtitle: "Short sections that connect the research to youth punishment and solitary confinement.",
+    intro:
+      "Short, readable points. No full essay walls. If you add PDFs in public/docs, link them here for the full version.",
     cards: [
       {
         title: "Teens and extreme punishment",
         icon: Scale,
         oneLine:
-          "Teenagers should not face punishments as final as the death penalty because the system is flawed, kids are easier to pressure, and the risk of irreversible harm is too high.",
+          "Teenagers should not face punishments as final as the death penalty because the system is flawed, youth are easier to pressure, and the risk of irreversible harm is too high.",
         bullets: [
-          "Wrongful convictions and false confessions happen, and youth are more vulnerable under pressure",
-          "Bias increases risk in extreme sentencing and outcomes",
-          "Extreme punishments are not reliably humane or reversible",
+          "The system gets it wrong: wrongful convictions and false confessions happen",
+          "Bias raises the risk: extreme sentencing has not been applied equally",
+          "The punishment is cruel: executions are not reliably humane or reversible",
         ],
         bottomLine: "If a system can be wrong, it should never be allowed to permanently end a child's life.",
-        pdfKey: "deathPenaltyPdf" as const,
-        pdfLabel: "Full paper (PDF)",
+        // pdfHref: "/docs/teens-death-penalty.pdf",
       },
       {
         title: "What solitary does to kids",
@@ -105,34 +116,48 @@ const CONTENT = {
           "Linked to anxiety, depression, panic, and paranoia",
           "Higher risk of self-harm and suicide",
           "Long-term psychological damage and trauma symptoms",
-          "Often used because of staffing, rules, or so-called protection, not because it helps kids",
+          "Often used for staffing, rules, or so-called protection, not because it helps kids",
         ],
         bottomLine: "Kids end up paying for a system that lacks safe alternatives.",
-        pdfKey: "solitaryPdf" as const,
-        pdfLabel: "Full paper (PDF)",
+        // pdfHref: "/docs/solitary-confinement.pdf",
       },
       {
         title: "Why solitary should not be used",
         icon: FileText,
         oneLine:
-          "Solitary may control a situation short term, but long-term isolation causes damage and can make reentry harder.",
+          "Solitary may control a situation short term, but long-term isolation can cause damage and make reentry harder.",
         bullets: [
-          "Most incarcerated people return home, and isolation can increase instability after release",
-          "If a practice worsens mental health, it works against rehabilitation",
-          "Better options include step-down programs, clinical care, and strict limits with oversight",
+          "Public safety problem: most people return home, and isolation can increase instability after release",
+          "Rehabilitation problem: if a practice worsens mental health, it works against reducing future harm",
+          "Better path: step-down programs, clinical care, strict limits, oversight, and transparency",
         ],
         bottomLine: "If a punishment increases risk after release, it is not real safety.",
-        pdfKey: "solitaryPdf" as const,
-        pdfLabel: "Full paper (PDF)",
+        // pdfHref: "/docs/solitary-confinement.pdf",
       },
-    ],
+    ] as PolicyCard[],
   },
 
+  sources: [
+    {
+      label: "BJS - Recidivism (topic page)",
+      href: "https://bjs.ojp.gov/topics/recidivism",
+    },
+    {
+      label: "RAND (2013) - Evaluating the Effectiveness of Correctional Education",
+      href: "https://www.rand.org/pubs/research_reports/RR266.html",
+    },
+    {
+      label: "BJS - Prisoner Recidivism Study updates (BJS publications page)",
+      href: "https://bjs.ojp.gov/library/publications/list?field_keywords_target_id%5B0%5D=Recidivism",
+    },
+  ] as LinkItem[],
+
   about: {
-    title: "About",
-    text: [
-      "This site is built as a clean research brief: one main project, clear sections, and short policy notes.",
-      "The goal is simple: explain the problem, show the method and results, and point to what should be tested next with real data.",
+    title: "About this site",
+    bullets: [
+      "Built as a clean research brief: clear question, method, findings, and next steps",
+      "Designed to be readable first, then link out to code and longer writing",
+      "Everything here is educational, not legal advice",
     ],
   },
 };
@@ -146,6 +171,19 @@ function IconBadge({ Icon }: { Icon: React.ElementType }) {
     <div className="h-10 w-10 rounded-2xl bg-white/10 ring-1 ring-white/10 flex items-center justify-center">
       <Icon className="h-5 w-5" />
     </div>
+  );
+}
+
+function BulletList({ items, dense }: { items: string[]; dense?: boolean }) {
+  return (
+    <ul className={cx("text-white/75 leading-relaxed", dense ? "space-y-1.5" : "space-y-2.5")}>
+      {items.map((b) => (
+        <li key={b} className="flex gap-3">
+          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-white/60" />
+          <span>{b}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -166,9 +204,7 @@ function Section({
     <section id={id} className="scroll-mt-28 py-14 md:py-20">
       <div className="max-w-6xl mx-auto px-4">
         <div className="max-w-3xl">
-          {eyebrow ? (
-            <div className="text-xs uppercase tracking-widest text-white/60">{eyebrow}</div>
-          ) : null}
+          {eyebrow ? <div className="text-xs uppercase tracking-widest text-white/60">{eyebrow}</div> : null}
           <h2 className="mt-2 text-2xl md:text-3xl font-semibold text-white">{title}</h2>
           {subtitle ? <p className="mt-3 text-white/70 leading-relaxed">{subtitle}</p> : null}
         </div>
@@ -178,17 +214,8 @@ function Section({
   );
 }
 
-function BulletList({ items }: { items: string[] }) {
-  return (
-    <ul className="mt-3 space-y-2 text-sm text-white/75 leading-relaxed">
-      {items.map((b) => (
-        <li key={b} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-white/60" />
-          <span>{b}</span>
-        </li>
-      ))}
-    </ul>
-  );
+function CardShell({ children }: { children: React.ReactNode }) {
+  return <div className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">{children}</div>;
 }
 
 export default function PrisonSite() {
@@ -205,15 +232,9 @@ export default function PrisonSite() {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const pdfHref = (key: "deathPenaltyPdf" | "solitaryPdf") => {
-    const v = (CONTENT.links as any)[key] as string;
-    if (!v) return "";
-    return v;
-  };
-
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
-      {/* soft background */}
+      {/* background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-white/6 blur-3xl" />
         <div className="absolute top-1/2 -right-56 h-[620px] w-[620px] rounded-full bg-white/5 blur-3xl" />
@@ -225,12 +246,12 @@ export default function PrisonSite() {
           <a href="#home" className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-2xl bg-white/10 ring-1 ring-white/10" />
             <div>
-              <div className="text-sm font-semibold leading-none">{CONTENT.siteTitle}</div>
-              <div className="text-xs text-white/60">{CONTENT.subTitle}</div>
+              <div className="text-sm font-semibold leading-none">{CONTENT.title}</div>
+              <div className="text-xs text-white/60">{CONTENT.subtitle}</div>
             </div>
           </a>
 
-          <nav className="hidden md:flex items-center gap-2">
+          <nav className="hidden md:flex items-center gap-1">
             {nav.map((item) => (
               <a
                 key={item.id}
@@ -304,7 +325,6 @@ export default function PrisonSite() {
         </div>
       ) : null}
 
-      {/* main */}
       <main id="home" className="scroll-mt-28">
         {/* hero */}
         <div className="max-w-6xl mx-auto px-4 pt-12 md:pt-16 pb-10">
@@ -316,16 +336,18 @@ export default function PrisonSite() {
                 transition={{ duration: 0.45 }}
                 className="text-3xl md:text-5xl font-semibold leading-tight"
               >
-                {CONTENT.siteTitle}
+                {CONTENT.title}
               </motion.h1>
+
+              <div className="mt-3 text-sm text-white/60">{CONTENT.authorLine}</div>
 
               <motion.p
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.05 }}
+                transition={{ duration: 0.45, delay: 0.06 }}
                 className="mt-4 text-white/75 text-base md:text-lg leading-relaxed"
               >
-                {CONTENT.tagline}
+                {CONTENT.abstract}
               </motion.p>
 
               <div className="mt-6 flex flex-wrap gap-3">
@@ -336,21 +358,23 @@ export default function PrisonSite() {
                   Read the research <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
-                  href="#policy"
+                  href={CONTENT.links.repo}
+                  target="_blank"
+                  rel="noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 ring-1 ring-white/10 hover:bg-white/15 text-white font-semibold"
                 >
-                  Policy notes <ArrowRight className="h-4 w-4" />
+                  View code <ExternalLink className="h-4 w-4 opacity-70" />
                 </a>
               </div>
 
               <div className="mt-8 rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-                <div className="text-sm font-semibold">Key highlights</div>
+                <div className="text-sm font-semibold">At a glance</div>
                 <div className="mt-4 grid sm:grid-cols-3 gap-3">
-                  {CONTENT.highlights.map((h) => (
-                    <div key={h.label} className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4">
-                      <div className="text-xs text-white/60">{h.label}</div>
-                      <div className="text-sm font-semibold mt-1">{h.value}</div>
-                      <div className="text-xs text-white/55 mt-1">{h.note}</div>
+                  {CONTENT.stats.map((s) => (
+                    <div key={s.label} className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4">
+                      <div className="text-xs text-white/60">{s.label}</div>
+                      <div className="text-sm font-semibold mt-1">{s.value}</div>
+                      <div className="text-xs text-white/55 mt-1">{s.note}</div>
                     </div>
                   ))}
                 </div>
@@ -358,21 +382,32 @@ export default function PrisonSite() {
             </div>
 
             <div className="md:col-span-5">
-              <div className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-                <div className="text-sm font-semibold">Project links</div>
+              <CardShell>
+                <div className="text-sm font-semibold">Quick navigation</div>
                 <div className="mt-4 grid gap-3">
                   <a
-                    href={CONTENT.links.recidivismRepo}
-                    target="_blank"
-                    rel="noreferrer"
+                    href="#research"
                     className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 hover:bg-white/10 transition"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="font-semibold">Code + analysis</div>
-                        <div className="text-sm text-white/70 mt-1">Repo, notebooks, results</div>
+                        <div className="font-semibold">Research brief</div>
+                        <div className="text-sm text-white/70 mt-1">Question, method, findings</div>
                       </div>
-                      <ExternalLink className="h-4 w-4 opacity-70 mt-1" />
+                      <LineChart className="h-4 w-4 opacity-70 mt-1" />
+                    </div>
+                  </a>
+
+                  <a
+                    href="#policy"
+                    className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 hover:bg-white/10 transition"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="font-semibold">Policy notes</div>
+                        <div className="text-sm text-white/70 mt-1">Youth punishment, solitary</div>
+                      </div>
+                      <ShieldAlert className="h-4 w-4 opacity-70 mt-1" />
                     </div>
                   </a>
 
@@ -382,133 +417,150 @@ export default function PrisonSite() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="font-semibold">Sources used</div>
-                        <div className="text-sm text-white/70 mt-1">BJS and RAND references</div>
+                        <div className="font-semibold">Sources</div>
+                        <div className="text-sm text-white/70 mt-1">BJS and RAND links</div>
                       </div>
-                      <ArrowRight className="h-4 w-4 opacity-70 mt-1" />
-                    </div>
-                  </a>
-
-                  <a
-                    href={CONTENT.links.githubProfile}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 hover:bg-white/10 transition"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="font-semibold">GitHub profile</div>
-                        <div className="text-sm text-white/70 mt-1">All projects</div>
-                      </div>
-                      <ExternalLink className="h-4 w-4 opacity-70 mt-1" />
+                      <BookOpen className="h-4 w-4 opacity-70 mt-1" />
                     </div>
                   </a>
                 </div>
 
-                <div className="mt-5 text-xs text-white/55 leading-relaxed">
-                  Tip: add slide images in public/assets as slide_01.png, slide_02.png, etc.
+                <div className="mt-5 text-xs text-white/55">
+                  Slide images load from public/assets as slide_01.png to slide_07.png.
                 </div>
-              </div>
+              </CardShell>
             </div>
           </div>
         </div>
 
-        {/* Research */}
-        <Section id="research" eyebrow="Research" title={CONTENT.research.title}>
+        {/* research */}
+        <Section id="research" eyebrow="Research" title="Research brief">
           <div className="grid lg:grid-cols-3 gap-4">
-            <div className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6 lg:col-span-2">
-              <div className="flex items-center gap-3">
-                <IconBadge Icon={LineChart} />
-                <div className="font-semibold">Overview</div>
-              </div>
-              <p className="mt-4 text-sm text-white/75 leading-relaxed">{CONTENT.research.overview}</p>
+            <div className="lg:col-span-2 space-y-4">
+              {CONTENT.research.sections.map((s) => (
+                <CardShell key={s.title}>
+                  <div className="font-semibold">{s.title}</div>
+                  <div className="mt-3 space-y-2 text-sm text-white/75 leading-relaxed">
+                    {s.body.map((p) => (
+                      <p key={p}>{p}</p>
+                    ))}
+                  </div>
+                </CardShell>
+              ))}
+            </div>
 
-              <div className="mt-6 rounded-2xl bg-white/5 ring-1 ring-white/10 p-4">
-                <div className="text-sm font-semibold">Research question</div>
-                <div className="mt-2 text-sm text-white/75">{CONTENT.research.question}</div>
+            <CardShell>
+              <div className="flex items-center gap-3">
+                <IconBadge Icon={Scale} />
+                <div>
+                  <div className="font-semibold">Method</div>
+                  <div className="text-xs text-white/60 mt-1">How the test was set up</div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <BulletList items={CONTENT.research.method} dense />
               </div>
 
               <a
-                href={CONTENT.links.recidivismRepo}
+                href={CONTENT.links.repo}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white hover:opacity-90"
               >
-                View repo <ExternalLink className="h-4 w-4 opacity-70" />
+                Repo and notebooks <ExternalLink className="h-4 w-4 opacity-70" />
               </a>
-            </div>
-
-            <div className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-              <div className="flex items-center gap-3">
-                <IconBadge Icon={Scale} />
-                <div className="font-semibold">Method</div>
-              </div>
-              <BulletList items={CONTENT.research.method} />
-
-              <div className="mt-6">
-                <div className="font-semibold">Results</div>
-                <BulletList items={CONTENT.research.results} />
-              </div>
-            </div>
-          </div>
-
-          {/* Slide gallery */}
-          <div className="mt-6 rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="font-semibold">Slide highlights</div>
-                <div className="text-sm text-white/70 mt-1">
-                  Add images in public/assets to display these.
-                </div>
-              </div>
-              <LineChart className="h-5 w-5 opacity-70" />
-            </div>
-
-            <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {CONTENT.research.slides.map((s) => (
-                <div key={s.src} className="rounded-2xl bg-white/5 ring-1 ring-white/10 overflow-hidden">
-                  <div className="aspect-[16/9] bg-white/5">
-                    <img
-                      src={s.src}
-                      alt={s.caption}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                      onError={(e) => {
-                        const parent = e.currentTarget.parentElement as HTMLElement | null;
-                        if (parent) parent.style.display = "none";
-                      }}
-                    />
-                  </div>
-                  <div className="p-4 text-sm text-white/75 leading-relaxed">{s.caption}</div>
-                </div>
-              ))}
-            </div>
+            </CardShell>
           </div>
 
           <div className="mt-6 grid md:grid-cols-3 gap-4">
-            <div className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-              <div className="font-semibold">Implications</div>
-              <BulletList items={CONTENT.research.implications} />
-            </div>
-            <div className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
+            <CardShell>
+              <div className="flex items-center gap-3">
+                <IconBadge Icon={LineChart} />
+                <div className="font-semibold">Key findings</div>
+              </div>
+              <div className="mt-4">
+                <BulletList items={CONTENT.research.keyFindings} />
+              </div>
+            </CardShell>
+
+            <CardShell>
+              <div className="flex items-center gap-3">
+                <IconBadge Icon={ShieldAlert} />
+                <div className="font-semibold">Implications</div>
+              </div>
+              <div className="mt-4">
+                <BulletList items={CONTENT.research.implications} />
+              </div>
+            </CardShell>
+
+            <CardShell>
+              <div className="flex items-center gap-3">
+                <IconBadge Icon={ArrowRight} />
+                <div className="font-semibold">Next steps</div>
+              </div>
+              <div className="mt-4">
+                <BulletList items={CONTENT.research.nextSteps} />
+              </div>
+            </CardShell>
+          </div>
+
+          <div className="mt-6 grid md:grid-cols-2 gap-4">
+            <CardShell>
               <div className="font-semibold">Limitations</div>
-              <BulletList items={CONTENT.research.limitations} />
-            </div>
-            <div className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-              <div className="font-semibold">Next steps</div>
-              <BulletList items={CONTENT.research.nextSteps} />
-            </div>
+              <div className="mt-4">
+                <BulletList
+                  items={[
+                    "Simulated data illustrates direction of effects, not causality",
+                    "Employment is a proxy, not direct education participation data",
+                    "Replication needs richer controls and administrative records",
+                  ]}
+                />
+              </div>
+            </CardShell>
+
+            <CardShell>
+              <div className="font-semibold">Slide highlights</div>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {CONTENT.research.slides.map((s) => (
+                  <div
+                    key={s.src}
+                    className="rounded-2xl bg-white/5 ring-1 ring-white/10 overflow-hidden"
+                  >
+                    <div className="aspect-[16/9] bg-white/5">
+                      <img
+                        src={s.src}
+                        alt={s.caption}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          const wrap = e.currentTarget.closest("div.rounded-2xl") as HTMLElement | null;
+                          if (wrap) wrap.style.display = "none";
+                        }}
+                      />
+                    </div>
+                    <div className="p-3 text-xs text-white/70 leading-relaxed">{s.caption}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 text-xs text-white/55">
+                If a slide is missing, it will hide automatically. Make sure filenames match exactly.
+              </div>
+            </CardShell>
           </div>
         </Section>
 
-        {/* Policy */}
-        <Section id="policy" eyebrow="Policy" title={CONTENT.policy.title} subtitle={CONTENT.policy.subtitle}>
+        {/* policy */}
+        <Section
+          id="policy"
+          eyebrow="Policy"
+          title="Policy notes"
+          subtitle={CONTENT.policy.intro}
+        >
           <div className="grid md:grid-cols-3 gap-4">
             {CONTENT.policy.cards.map((p) => {
-              const href = pdfHref(p.pdfKey);
-              const enabled = Boolean(href);
+              const enabled = Boolean(p.pdfHref);
               return (
-                <div key={p.title} className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
+                <CardShell key={p.title}>
                   <div className="flex items-center gap-3">
                     <IconBadge Icon={p.icon} />
                     <div className="font-semibold">{p.title}</div>
@@ -516,7 +568,9 @@ export default function PrisonSite() {
 
                   <p className="mt-3 text-sm text-white/75 leading-relaxed">{p.oneLine}</p>
 
-                  <BulletList items={p.bullets} />
+                  <div className="mt-4">
+                    <BulletList items={p.bullets} />
+                  </div>
 
                   <div className="mt-4 rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 text-sm text-white/75 leading-relaxed">
                     <span className="text-white font-semibold">Bottom line: </span>
@@ -524,7 +578,7 @@ export default function PrisonSite() {
                   </div>
 
                   <a
-                    href={enabled ? href : "#"}
+                    href={enabled ? p.pdfHref : "#"}
                     target={enabled ? "_blank" : undefined}
                     rel={enabled ? "noreferrer" : undefined}
                     className={cx(
@@ -532,68 +586,89 @@ export default function PrisonSite() {
                       enabled ? "text-white hover:opacity-90" : "text-white/40 pointer-events-none"
                     )}
                   >
-                    {enabled ? p.pdfLabel : "Full paper (PDF soon)"}
+                    Full paper (PDF)
                     <ExternalLink className="h-4 w-4 opacity-70" />
                   </a>
-                </div>
+                </CardShell>
               );
             })}
           </div>
         </Section>
 
-        {/* Sources */}
-        <Section id="sources" eyebrow="Sources" title="Sources used" subtitle="High-level references used to frame the research section.">
-          <div className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-            <div className="font-semibold">Research framing</div>
-            <BulletList items={CONTENT.research.sources} />
-            <div className="mt-4 text-xs text-white/55">
-              If you want, you can replace this with direct links to the exact reports you used.
+        {/* sources */}
+        <Section
+          id="sources"
+          eyebrow="Sources"
+          title="Sources used"
+          subtitle="Direct links to the core references used for the research framing."
+        >
+          <CardShell>
+            <div className="grid gap-3">
+              {CONTENT.sources.map((s) => (
+                <a
+                  key={s.href}
+                  href={s.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 hover:bg-white/10 transition flex items-start justify-between gap-3"
+                >
+                  <div className="text-sm text-white/80">{s.label}</div>
+                  <ExternalLink className="h-4 w-4 opacity-70 mt-0.5" />
+                </a>
+              ))}
             </div>
-          </div>
+          </CardShell>
         </Section>
 
-        {/* About */}
+        {/* about */}
         <Section id="about" eyebrow="About" title={CONTENT.about.title}>
           <div className="grid md:grid-cols-12 gap-6">
-            <div className="md:col-span-8 rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-              {CONTENT.about.text.map((t) => (
-                <p key={t} className="text-white/75 leading-relaxed mb-4 last:mb-0">
-                  {t}
-                </p>
-              ))}
+            <div className="md:col-span-8">
+              <CardShell>
+                <div className="flex items-center gap-3">
+                  <IconBadge Icon={FileText} />
+                  <div>
+                    <div className="font-semibold">Purpose</div>
+                    <div className="text-xs text-white/60 mt-1">What this portfolio is showing</div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <BulletList items={CONTENT.about.bullets} />
+                </div>
 
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a
-                  href={CONTENT.links.recidivismRepo}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:opacity-90"
-                >
-                  <Github className="h-4 w-4" />
-                  Recidivism repo
-                  <ExternalLink className="h-4 w-4 opacity-70" />
-                </a>
-                <a
-                  href={CONTENT.links.githubProfile}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 ring-1 ring-white/10 hover:bg-white/15 text-sm font-semibold"
-                >
-                  GitHub profile
-                  <ExternalLink className="h-4 w-4 opacity-70" />
-                </a>
-              </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a
+                    href={CONTENT.links.repo}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white text-neutral-950 font-semibold hover:opacity-90"
+                  >
+                    <Github className="h-4 w-4" />
+                    Repo
+                    <ExternalLink className="h-4 w-4 opacity-70" />
+                  </a>
+
+                  <a
+                    href={CONTENT.links.githubProfile}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 ring-1 ring-white/10 hover:bg-white/15 text-sm font-semibold"
+                  >
+                    GitHub profile
+                    <ExternalLink className="h-4 w-4 opacity-70" />
+                  </a>
+                </div>
+              </CardShell>
             </div>
 
-            <div className="md:col-span-4 rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
-              <div className="text-sm font-semibold">What to add next</div>
-              <BulletList
-                items={[
-                  "Export your slides to images and drop them into public/assets",
-                  "Replace placeholder sources with direct report links",
-                  "Add a small interactive chart or two when you have real data",
-                ]}
-              />
+            <div className="md:col-span-4">
+              <CardShell>
+                <div className="text-sm font-semibold">Site notes</div>
+                <div className="mt-3 text-sm text-white/70 leading-relaxed">
+                  Want this to feel even more like a research site? Add a Methods PDF, a short References page,
+                  and a single figure recreated as a chart instead of an image.
+                </div>
+              </CardShell>
             </div>
           </div>
         </Section>
@@ -602,7 +677,7 @@ export default function PrisonSite() {
         <footer className="border-t border-white/10">
           <div className="max-w-6xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
             <div className="text-sm text-white/60">
-              © {new Date().getFullYear()} {CONTENT.siteTitle}
+              © {new Date().getFullYear()} {CONTENT.authorLine}
             </div>
             <div className="flex flex-wrap gap-3">
               <a
@@ -618,7 +693,8 @@ export default function PrisonSite() {
                 href="#home"
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 text-sm"
               >
-                Back to top <ArrowRight className="h-4 w-4 opacity-70" />
+                Back to top
+                <ArrowRight className="h-4 w-4 opacity-70" />
               </a>
             </div>
           </div>
