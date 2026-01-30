@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+:root { color-scheme: dark; }
+body {
+  font-feature-settings: "ss01" 1, "cv02" 1, "cv03" 1;
+  letter-spacing: 0.1px;
+}
+h1 { letter-spacing: -0.02em; }
+h2 { letter-spacing: -0.015em; }
+p  { line-height: 1.75; }
