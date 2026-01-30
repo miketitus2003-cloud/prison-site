@@ -45,7 +45,7 @@ export default function AboutPage() {
             <H2>Author</H2>
             <div className="mt-3 space-y-3">
               <P>
-                {SITE.author}. This project is part of my portfolio—combining analysis, communication, and policy
+                {SITE.author}. This project is part of my portfolio combining analysis, communication, and policy
                 reasoning in a format that’s easy to verify and easy to read.
               </P>
               <P>
