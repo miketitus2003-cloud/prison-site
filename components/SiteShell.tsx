@@ -97,8 +97,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                       onClick={() => setOpen(false)}
                       className={cx(
                         "px-4 py-3 rounded-2xl ring-1 ring-white/10",
-                        active ? "bg-white/10" : "bg-white/5 hover:bg-white/10"
-                      )}
+                        active ? "text-white" : "text-white/70 hover:text-white" )}
                     >
                       {item.label}
                     </Link>
