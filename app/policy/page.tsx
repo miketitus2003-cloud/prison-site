@@ -11,36 +11,45 @@ export default function PolicyPage() {
 
         <div className="mt-4 max-w-3xl">
           <P>
-            Short briefs connected to my recidivism and reentry research. Each one focuses on the strongest points
-            and is written to be scanned quickly.
+            Short, evidence-based briefs connected to youth sentencing and solitary confinement.
+            Each section states the claim, the key supporting points, and the takeaway.
           </P>
         </div>
 
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
+        <div className="mt-10 grid md:grid-cols-3 gap-4">
           {SITE.policy.map((p) => (
-            <Surface key={p.title} className="flex h-full flex-col">
+            <Surface key={p.title} className="flex flex-col">
               <div className="text-lg font-semibold">{p.title}</div>
 
               <div className="mt-3">
                 <P>{p.oneLine}</P>
               </div>
 
-              <div className="mt-5 text-xs uppercase tracking-widest text-white/60">
+              <div className="mt-6 text-xs uppercase tracking-widest text-white/60">
                 Key points
               </div>
               <Bullets items={p.bullets} />
 
-              {/* Footer */}
-              <div className="mt-auto pt-5">
-                <div className="h-px bg-white/10" />
-                <div className="mt-4">
-                  <div className="text-xs uppercase tracking-widest text-white/60">
-                    Bottom line
-                  </div>
-                  <p className="mt-2 text-sm text-white/75 leading-relaxed">
-                    {p.bottomLine}
-                  </p>
+              {/* cleaner bottom line (no “Note”, no extra blocks) */}
+              <div className="mt-6 pt-5 border-t border-white/10">
+                <div className="text-xs uppercase tracking-widest text-white/60">
+                  Takeaway
                 </div>
+                <div className="mt-2 text-sm text-white/80 leading-relaxed">
+                  {p.bottomLine}
+                </div>
+
+                {/* Optional: only show if you actually set a pdfHref */}
+                {p.pdfHref ? (
+                  <a
+                    href={p.pdfHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-2xl bg-white/10 ring-1 ring-white/10 hover:bg-white/15 text-sm font-semibold transition"
+                  >
+                    Full brief (PDF)
+                  </a>
+                ) : null}
               </div>
             </Surface>
           ))}

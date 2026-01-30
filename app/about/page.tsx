@@ -1,72 +1,66 @@
 // app/about/page.tsx
-import { Card, SectionHeader } from "@/components/ui";
-import { ExternalLink } from "lucide-react";
-
-const LINKS = {
-  repo: "https://github.com/miketitus2003-cloud/prison-education-recidivism-analysis-standalone",
-};
+import { Container, Surface, Kicker, H1, H2, P, ButtonLink } from "@/components/ui";
+import { SITE } from "@/components/siteData";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 pt-12 md:pt-16 pb-12">
-      <SectionHeader
-        eyebrow="About"
-        title="About this project"
-        subtitle="A short research brief + policy notes, built to be readable and easy to verify."
-      />
+    <Container>
+      <div className="pt-12 md:pt-16 pb-12">
+        <Kicker>About</Kicker>
+        <H1>About</H1>
 
-      <div className="mt-8 grid md:grid-cols-12 gap-6">
-        <div className="md:col-span-7 space-y-6">
-          <Card>
-            <div className="text-sm text-white/60">Project focus</div>
-            <h2 className="mt-2 text-xl font-semibold">What I’m studying</h2>
-            <p className="mt-3 text-white/75 leading-relaxed">
-              This site centers on one question: how strongly do reentry supports relate to recidivism?
-              Because many public datasets don’t track prison education program participation in a clean way,
-              I use post-release employment as a measurable proxy for education/reentry support and test how
-              it relates to returning to prison.
-            </p>
-          </Card>
-
-          <Card>
-            <div className="text-sm text-white/60">How to read the site</div>
-            <h2 className="mt-2 text-xl font-semibold">What’s where</h2>
-            <ul className="mt-4 space-y-2 text-sm text-white/75 leading-relaxed">
-              <li>• <span className="text-white">Research</span>: question → method → findings → slides</li>
-              <li>• <span className="text-white">Policy</span>: short, strong points tied to youth sentencing and solitary confinement</li>
-              <li>• <span className="text-white">Sources</span>: direct links to the core references used for framing</li>
-            </ul>
-          </Card>
+        <div className="mt-4 max-w-3xl">
+          <P>
+            This site is the public-facing version of my work on prison education, reentry, and recidivism.
+            It’s built to read like a research brief: clear question, clear approach, and clear takeaways.
+          </P>
         </div>
 
-        <div className="md:col-span-5 space-y-6">
-          <Card>
-            <div className="text-sm text-white/60">Methods note</div>
-            <h2 className="mt-2 text-xl font-semibold">Scope and limits</h2>
-            <ul className="mt-4 space-y-2 text-sm text-white/75 leading-relaxed">
-              <li>• The model shown here demonstrates relationships, not causation.</li>
-              <li>• Employment is a proxy — it’s measurable, but not the same as direct program completion.</li>
-              <li>• Stronger versions would add administrative education records and more controls.</li>
-            </ul>
-          </Card>
+        <div className="mt-10 grid md:grid-cols-2 gap-4">
+          <Surface>
+            <H2>Project focus</H2>
+            <div className="mt-3 space-y-3">
+              <P>
+                My main question is how strongly reentry supports relate to recidivism. Because many public datasets
+                don’t track education participation cleanly, I use post-release employment as a measurable proxy and
+                treat the results as directional evidence — not a causal claim.
+              </P>
+              <P>
+                The policy briefs connect the research to real-world debates around youth sentencing and solitary
+                confinement, focusing on the strongest points and practical implications.
+              </P>
+            </div>
 
-          <Card>
-            <div className="text-sm text-white/60">Transparency</div>
-            <h2 className="mt-2 text-xl font-semibold">Code and materials</h2>
-            <p className="mt-3 text-white/75 leading-relaxed">
-              The analysis repo contains the model setup and supporting materials.
-            </p>
-            <a
-              href={LINKS.repo}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white hover:opacity-90"
-            >
-              View analysis repo <ExternalLink className="h-4 w-4 opacity-70" />
-            </a>
-          </Card>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <ButtonLink href="/research" variant="primary">
+                Read the research
+              </ButtonLink>
+              <ButtonLink href="/policy" variant="ghost">
+                Policy briefs
+              </ButtonLink>
+            </div>
+          </Surface>
+
+          <Surface>
+            <H2>Author</H2>
+            <div className="mt-3 space-y-3">
+              <P>
+                {SITE.author}. This project is part of my portfolio—combining analysis, communication, and policy
+                reasoning in a format that’s easy to verify and easy to read.
+              </P>
+              <P>
+                All citations and primary links are kept on the Sources page.
+              </P>
+
+              <div className="mt-6">
+                <ButtonLink href="/sources" variant="secondary">
+                  Sources & references
+                </ButtonLink>
+              </div>
+            </div>
+          </Surface>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
