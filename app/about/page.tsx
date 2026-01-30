@@ -23,10 +23,10 @@ export default function AboutPage() {
               <P>
                 My main question is how strongly reentry supports relate to recidivism. Because many public datasets
                 don’t track education participation cleanly, I use post-release employment as a measurable proxy and
-                treat the results as directional evidence — not a causal claim.
+                treat the results as directional evidence not a causal claim.
               </P>
               <P>
-                The policy briefs connect the research to real-world debates around youth sentencing and solitary
+                The policy briefs connect the research to real world debates around youth sentencing and solitary
                 confinement, focusing on the strongest points and practical implications.
               </P>
             </div>
