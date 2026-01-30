@@ -1,43 +1,42 @@
 "use client";
 
 import React from "react";
-import { Surface, H2, P } from "@/components/ui";
+import { Card, H2, P, Badge } from "@/components/ui";
 import type { Slide } from "@/components/siteData";
 
 export default function SlideGallery({ slides }: { slides: Slide[] }) {
   return (
-    <Surface>
-      <div className="flex items-start justify-between gap-3">
+    <Card className="p-6 sm:p-8">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <H2>Figures and slide highlights</H2>
-          <P>
-            These load from public/assets. If an image is missing, it will not display.
+          <H2>Slide highlights</H2>
+          <P className="mt-2">
+            Selected figures from the project deck (served from <span className="font-medium">public/assets</span>).
           </P>
         </div>
+        <Badge>{slides.length} slides</Badge>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {slides.map((s) => (
-          <div
+          <figure
             key={s.src}
-            className="rounded-2xl bg-white/5 ring-1 ring-white/10 overflow-hidden"
+            className="overflow-hidden rounded-2xl border border-[rgb(var(--line))] bg-white"
           >
-            <div className="aspect-[16/9] bg-white/5">
+            <div className="aspect-[16/10] bg-neutral-50">
               <img
                 src={s.src}
                 alt={s.caption}
                 className="h-full w-full object-cover"
                 loading="lazy"
-                onError={(e) => {
-                  const wrap = e.currentTarget.closest("div.rounded-2xl") as HTMLElement | null;
-                  if (wrap) wrap.style.display = "none";
-                }}
               />
             </div>
-            <div className="p-3 text-xs text-white/70 leading-relaxed">{s.caption}</div>
-          </div>
+            <figcaption className="p-3 text-xs text-[rgb(var(--muted))] leading-relaxed">
+              {s.caption}
+            </figcaption>
+          </figure>
         ))}
       </div>
-    </Surface>
+    </Card>
   );
 }

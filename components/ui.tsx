@@ -1,15 +1,16 @@
-// components/ui.tsx
 import React from "react";
 import Link from "next/link";
 
-function cx(...classes: Array<string | false | undefined | null>) {
+function cx(...classes: Array<string | false | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-/* Layout wrappers */
-
 export function Container({ children }: { children: React.ReactNode }) {
-  return <div className="max-w-6xl mx-auto px-4">{children}</div>;
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+      {children}
+    </div>
+  );
 }
 
 export function Surface({
@@ -22,7 +23,7 @@ export function Surface({
   return (
     <div
       className={cx(
-        "rounded-3xl bg-white/5 ring-1 ring-white/10 p-6",
+        "rounded-3xl bg-white border border-[rgb(var(--line))] shadow-[0_10px_30px_-20px_rgba(var(--shadow),0.35)]",
         className
       )}
     >
@@ -31,9 +32,7 @@ export function Surface({
   );
 }
 
-/* Typography */
-
-export function Kicker({
+export function Card({
   children,
   className,
 }: {
@@ -41,56 +40,33 @@ export function Kicker({
   className?: string;
 }) {
   return (
-    <div className={cx("text-xs uppercase tracking-widest text-white/60", className)}>
+    <Surface className={cx("p-6 sm:p-8", className)}>
+      {children}
+    </Surface>
+  );
+}
+
+export function Kicker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="text-xs uppercase tracking-[0.18em] text-[rgb(var(--muted))]">
       {children}
     </div>
   );
 }
 
-export function H1({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+export function H1({ children }: { children: React.ReactNode }) {
   return (
-    <h1
-      className={cx(
-        "mt-2 text-3xl md:text-5xl font-semibold tracking-tight text-white",
-        className
-      )}
-    >
+    <h1 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-semibold text-[rgb(var(--fg))]">
       {children}
     </h1>
   );
 }
 
-export function H2({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+export function H2({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className={cx("text-lg md:text-xl font-semibold text-white", className)}>
+    <h2 className="text-lg sm:text-xl font-semibold text-[rgb(var(--fg))]">
       {children}
     </h2>
-  );
-}
-
-export function H3({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <h3 className={cx("text-base font-semibold text-white", className)}>
-      {children}
-    </h3>
   );
 }
 
@@ -101,36 +77,36 @@ export function P({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <p className={cx("text-white/75 leading-relaxed", className)}>{children}</p>;
+  return (
+    <p className={cx("text-[rgb(var(--muted))] leading-relaxed", className)}>
+      {children}
+    </p>
+  );
 }
-
-export function Subtle({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return <p className={cx("text-sm text-white/60 leading-relaxed", className)}>{children}</p>;
-}
-
-/* Lists, dividers, buttons */
 
 export function Bullets({ items }: { items: string[] }) {
   return (
-    <ul className="mt-4 space-y-2 text-sm text-white/75 leading-relaxed">
-      {items.map((b, idx) => (
-        <li key={`${idx}-${b.slice(0, 24)}`} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-white/60" />
-          <span>{b}</span>
+    <ul className="mt-4 space-y-2.5 text-sm text-[rgb(var(--muted))]">
+      {items.map((b) => (
+        <li key={b} className="flex gap-3">
+          <span className="mt-[0.55rem] h-1.5 w-1.5 rounded-full bg-[rgb(var(--accent))]" />
+          <span className="leading-relaxed">{b}</span>
         </li>
       ))}
     </ul>
   );
 }
 
-export function Divider({ className }: { className?: string }) {
-  return <div className={cx("my-6 h-px bg-white/10", className)} />;
+export function Divider() {
+  return <div className="my-6 h-px bg-[rgb(var(--line))]" />;
+}
+
+export function Badge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center rounded-full border border-[rgb(var(--line))] bg-white px-3 py-1 text-xs text-[rgb(var(--muted))]">
+      {children}
+    </span>
+  );
 }
 
 export function ButtonLink({
@@ -138,60 +114,37 @@ export function ButtonLink({
   children,
   variant = "primary",
   external = false,
-  className,
 }: {
   href: string;
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "ghost";
   external?: boolean;
-  className?: string;
 }) {
   const base =
-    "inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-sm font-semibold transition";
+    "inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-sm font-semibold transition active:scale-[0.99]";
   const styles =
     variant === "primary"
-      ? "bg-white text-neutral-950 hover:opacity-90"
+      ? "bg-[rgb(var(--fg))] text-white hover:opacity-90"
       : variant === "secondary"
-      ? "bg-white/10 ring-1 ring-white/10 hover:bg-white/15 text-white"
-      : "bg-white/5 ring-1 ring-white/10 hover:bg-white/10 text-white";
-
-  const cls = cx(base, styles, className);
+      ? "bg-white text-[rgb(var(--fg))] border border-[rgb(var(--line))] hover:bg-neutral-50"
+      : "bg-transparent text-[rgb(var(--fg))] hover:bg-neutral-50";
 
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noreferrer" className={cls}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className={cx(base, styles)}
+      >
         {children}
       </a>
     );
   }
 
   return (
-    <Link href={href} className={cls}>
+    <Link href={href} className={cx(base, styles)}>
       {children}
     </Link>
   );
 }
-
-/* Backwards compatible exports (so older pages don’t break) */
-
-export const Card = Surface;
-
-export function SectionHeader({
-  eyebrow,
-  title,
-  subtitle,
-}: {
-  eyebrow?: string;
-  title: string;
-  subtitle?: string;
-}) {
-  return (
-    <div className="max-w-3xl">
-      {eyebrow ? <Kicker>{eyebrow}</Kicker> : null}
-      <H1>{title}</H1>
-      {subtitle ? <P className="mt-4">{subtitle}</P> : null}
-    </div>
-  );
-}
-
-export const BulletList = Bullets;

@@ -1,119 +1,156 @@
 export type Slide = { src: string; caption: string };
 
 export const SITE = {
-  title: "Prison Education and Recidivism",
-  subtitle: "Research brief and policy notes",
   author: "Michael Parham",
 
-  intro:
-    "I studied how post-release employment (a proxy for education and reentry support) relates to recidivism, then wrote short policy notes on youth sentencing and solitary confinement.",
+  links: {
+    analysisRepo:
+      "https://github.com/miketitus2003-cloud/prison-education-recidivism-analysis-standalone",
+  },
 
-  highlights: [
-    { label: "Re-arrest rate", value: "62% within 3 years", note: "34 states, 2012 cohort" },
-    { label: "Education link", value: "43% lower odds", note: "reported in prior research" },
-    { label: "Proxy used", value: "Employment after release", note: "measurable reentry signal" },
-  ],
+  overview: {
+    title: "Prison Education & Recidivism",
+    subtitle: "Research brief + policy briefs",
+    lead:
+      "This project summarizes my recidivism analysis using post-release employment as a measurable proxy for reentry support, paired with short policy briefs on youth sentencing and solitary confinement.",
+    stats: [
+      {
+        label: "National context",
+        value: "High recidivism rates",
+        note: "BJS follow-up studies show many are rearrested after release.",
+      },
+      {
+        label: "Education link",
+        value: "Lower reoffending",
+        note: "Prior research connects correctional education to improved outcomes.",
+      },
+      {
+        label: "Proxy used here",
+        value: "Employment after release",
+        note: "Used when direct program participation data is missing.",
+      },
+    ],
+  },
 
   research: {
-    oneLine:
-      "Using post-release employment as a proxy for education and reentry support, I tested how employment, offense type, and time served relate to recidivism.",
-    whyBullets: [
-      "Recidivism is not just a statistic. It impacts families and community safety.",
-      "Education programs are linked to lower reoffending, but public datasets often miss program type and dosage.",
-      "Employment after release is measurable and connected to education and reentry support in prior research.",
-    ],
+    title: "Research brief",
     question:
-      "What is the relationship between employment (proxy), offense type, time served, and recidivism?",
+      "What is the relationship between post-release employment (proxy), offense type, time served, and recidivism?",
     methodBullets: [
       "Outcome: recidivism (1 = reoffended, 0 = did not)",
       "Predictors: employed (yes/no), offense type (violent vs drug), time served (years)",
       "Model: logistic regression (statsmodels Logit) in Python",
-      "Data: simulated dataset based on national patterns (directional illustration, not causal estimate)",
+      "Interpretation: directional evidence, not a causal estimate",
     ],
     resultsBullets: [
-      "Employed after release was associated with a much lower likelihood of reoffending",
+      "Employment after release was associated with a lower likelihood of reoffending",
       "Violent offense type was associated with a higher likelihood of return",
       "Time served was not statistically significant in this run",
     ],
-    implicationsBullets: [
-      "Shift focus from sentence length to in-prison programs and reentry support",
-      "Programs that lead to jobs can reduce returns and improve safety",
+    limitationsBullets: [
+      "Employment is a proxy, not direct education completion",
+      "Public datasets often miss program type and dosage",
+      "Stronger versions would add administrative education records and richer controls",
     ],
-    nextStepsBullets: [
-      "Add real education participation data",
-      "Test with state or local records",
-      "Include parole, demographics, and support systems",
-    ],
+    slides: [
+      { src: "/assets/slide_01.png", caption: "Project title and framing" },
+      { src: "/assets/slide_02.png", caption: "Why recidivism needs a closer look" },
+      { src: "/assets/slide_03.png", caption: "Research question and variables" },
+      { src: "/assets/slide_04.png", caption: "Method overview (logit model)" },
+      { src: "/assets/slide_05.png", caption: "Results summary" },
+      { src: "/assets/slide_06.png", caption: "Implications and next steps" },
+      { src: "/assets/slide_07.png", caption: "Closing / additional figure" },
+    ] as Slide[],
   },
-
-  slides: [
-    { src: "/assets/slide_01.png", caption: "Project title" },
-    { src: "/assets/slide_02.png", caption: "Why recidivism needs a closer look" },
-    { src: "/assets/slide_03.png", caption: "Research question and variables" },
-    { src: "/assets/slide_04.png", caption: "Method overview (Logit model)" },
-    { src: "/assets/slide_05.png", caption: "Results summary" },
-    { src: "/assets/slide_06.png", caption: "Implications and next steps" },
-    { src: "/assets/slide_07.png", caption: "Update this caption to match slide 7" },
-  ] as Slide[],
 
   policy: [
     {
       title: "Teens and extreme punishment",
       oneLine:
-        "Teenagers should not face punishments as final as the death penalty because the system is flawed, youth are easier to pressure, and the risk of irreversible harm is too high.",
+        "Teenagers should not face punishments as final as the death penalty. Youth are more vulnerable to pressure, the system can be wrong, and the harm is irreversible.",
       bullets: [
-        "The system gets it wrong: wrongful convictions and false confessions happen",
-        "Bias raises the risk: extreme sentencing has not been applied equally",
-        "The punishment itself can be cruel and irreversible",
+        "Wrongful convictions and false confessions are real risks",
+        "Unequal application increases the chance of irreversible injustice",
+        "Execution methods are not reliably humane, and the outcome cannot be undone",
       ],
-      bottomLine: "If a system can be wrong, it should never permanently end a child's life.",
-      pdfHref: "", // optional: "/docs/teens-death-penalty.pdf"
+      bottomLine:
+        "A system that can be wrong should not have the power to permanently end a child’s life.",
+      pdfHref: "", // optional later: "/docs/teens-death-penalty.pdf"
     },
     {
       title: "What solitary does to kids",
       oneLine:
-        "Solitary can mean 22 to 24 hours a day alone. For youth, isolation hits harder and can cause serious harm.",
+        "Solitary confinement can mean 22–24 hours alone per day. For youth, isolation can cause serious psychological harm and raises self-harm risk.",
       bullets: [
         "Linked to anxiety, depression, panic, and paranoia",
         "Higher risk of self-harm and suicide",
-        "Long-term psychological damage and trauma symptoms",
-        "Often used for staffing, rules, or so-called protection",
+        "Long-term damage and trauma symptoms can persist after release",
+        "Often used for staffing/rules rather than youth wellbeing",
       ],
-      bottomLine: "Kids end up paying for a system that lacks safe alternatives.",
-      pdfHref: "", // optional: "/docs/kids-solitary.pdf"
+      bottomLine:
+        "Isolation becomes punishment for a system’s lack of safer alternatives.",
+      pdfHref: "", // optional later: "/docs/kids-solitary.pdf"
     },
     {
       title: "Why solitary should not be used",
       oneLine:
-        "Solitary may control a situation short term, but long-term isolation can cause damage and make reentry harder.",
+        "Solitary may control a moment, but long-term isolation can make reentry harder and increase instability—hurting both rehabilitation and public safety.",
       bullets: [
-        "Public safety problem: most people return home, and isolation can increase instability after release",
-        "Rehabilitation problem: if a practice worsens mental health, it works against reducing future harm",
-        "Better path: step-down programs, clinical care, strict limits, oversight, and transparency",
+        "Public safety: most people return home, and isolation can worsen stability",
+        "Rehabilitation: practices that damage mental health fight the goal of reducing harm",
+        "Better path: strict limits, oversight, clinical care, and step-down programming",
       ],
-      bottomLine: "If a punishment increases risk after release, it is not real safety.",
-      pdfHref: "", // optional: "/docs/solitary-confinement.pdf"
+      bottomLine:
+        "If a punishment increases risk after release, it is not real safety.",
+      pdfHref: "", // optional later: "/docs/solitary-confinement.pdf"
     },
   ],
 
-  sources: [
-    {
-      label: "BJS - Recidivism topic page",
-      href: "https://bjs.ojp.gov/topics/recidivism",
-    },
-    {
-      label: "RAND (2013) - Correctional Education report",
-      href: "https://www.rand.org/pubs/research_reports/RR266.html",
-    },
-    {
-      label: "BJS publications search - recidivism",
-      href: "https://bjs.ojp.gov/library/publications/list?field_keywords_target_id%5B0%5D=Recidivism",
-    },
-  ],
+  sources: {
+    primaryLinks: [
+      {
+        label:
+          "BJS (2018) — Update on Prisoner Recidivism: 9-year follow-up (2005–2014)",
+        href: "https://bjs.ojp.gov/library/publications/2018-update-prisoner-recidivism-9-year-follow-period-2005-2014",
+      },
+      {
+        label:
+          "BJS PDF — Recidivism of prisoners released in 34 states in 2012",
+        href: "https://bjs.ojp.gov/sites/g/files/xyckuh236/files/media/document/rpr34s125yfup1217.pdf",
+      },
+      {
+        label: "RAND (2013) — Correctional Education meta-analysis",
+        href: "https://www.rand.org/pubs/research_reports/RR266.html",
+      },
+      {
+        label: "Death Penalty Information Center",
+        href: "https://deathpenaltyinfo.org/",
+      },
+      {
+        label: "Innocence Project",
+        href: "https://innocenceproject.org/",
+      },
+      {
+        label: "National Registry of Exonerations",
+        href: "https://www.law.umich.edu/special/exoneration/Pages/about.aspx",
+      },
+      {
+        label: "Human Rights Watch",
+        href: "https://www.hrw.org/",
+      },
+    ],
 
-  // Optional, keep subtle:
-  links: {
-    githubProfile: "", // put your github if you want: "https://github.com/miketitus2003-cloud"
-    repo: "", // put repo if you want
+    legalCases: [
+      "Roper v. Simmons, 543 U.S. 551 (2005)",
+    ],
+
+    articlesAndReads: [
+      "Bulman, Philip. “The Psychological Effects of Solitary Confinement.” Corrections Today, vol. 74, no. 3, 2012, pp. 58–59. ProQuest.",
+      "Lord, Rich. “In ‘the Hole’: Pa. Prisons’ Solitary Confinement Policy.” McClatchy – Tribune Business News, Jun 10, 2012. ProQuest.",
+      "Curtis, Abigail. “Is Solitary Confinement Torture?: Proposed Bill Would Place Limits on Use of Solitary Confinement in State Prison.” McClatchy – Tribune Business News, Oct 24, 2009. ProQuest.",
+      "Will, George. “Solitary; Confinement’s Toll.” St. Louis Post-Dispatch, Feb 21, 2013. ProQuest.",
+      "The Guardian (2014) — Clayton Lockett execution (background reading).",
+      "Equal Justice Initiative — George Stinney case (background reading).",
+    ],
   },
 };

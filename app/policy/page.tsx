@@ -1,57 +1,54 @@
-// app/policy/page.tsx
-import { Container, Surface, Kicker, H1, P, Bullets } from "@/components/ui";
+import { Container, Card, Kicker, H1, P, Bullets } from "@/components/ui";
 import { SITE } from "@/components/siteData";
 
 export default function PolicyPage() {
   return (
     <Container>
-      <div className="pt-12 md:pt-16 pb-12">
+      <div className="pt-12 sm:pt-16 pb-12">
         <Kicker>Policy</Kicker>
         <H1>Policy briefs</H1>
 
-        <div className="mt-4 max-w-3xl">
-          <P>
-            Short, evidence-based briefs connected to youth sentencing and solitary confinement.
-            Each section states the claim, the key supporting points, and the takeaway.
+        <div className="mt-5 max-w-3xl">
+          <P className="text-base sm:text-lg">
+            Short briefs tied to the research themes above. Each one is claim → key support → bottom line.
           </P>
         </div>
 
         <div className="mt-10 grid md:grid-cols-3 gap-4">
           {SITE.policy.map((p) => (
-            <Surface key={p.title} className="flex flex-col">
-              <div className="text-lg font-semibold">{p.title}</div>
+            <Card key={p.title} className="p-6 sm:p-7">
+              <div className="text-lg font-semibold text-[rgb(var(--fg))]">{p.title}</div>
 
               <div className="mt-3">
                 <P>{p.oneLine}</P>
               </div>
 
-              <div className="mt-6 text-xs uppercase tracking-widest text-white/60">
+              <div className="mt-5 text-xs uppercase tracking-[0.18em] text-[rgb(var(--muted))]">
                 Key points
               </div>
               <Bullets items={p.bullets} />
 
-              {/* cleaner bottom line (no “Note”, no extra blocks) */}
-              <div className="mt-6 pt-5 border-t border-white/10">
-                <div className="text-xs uppercase tracking-widest text-white/60">
-                  Takeaway
+              <div className="mt-5 rounded-2xl border border-[rgb(var(--line))] bg-neutral-50 p-4">
+                <div className="text-xs uppercase tracking-[0.18em] text-[rgb(var(--muted))]">
+                  Bottom line
                 </div>
-                <div className="mt-2 text-sm text-white/80 leading-relaxed">
+                <div className="mt-2 text-sm text-[rgb(var(--fg))] leading-relaxed">
                   {p.bottomLine}
                 </div>
-
-                {/* Optional: only show if you actually set a pdfHref */}
-                {p.pdfHref ? (
-                  <a
-                    href={p.pdfHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-2xl bg-white/10 ring-1 ring-white/10 hover:bg-white/15 text-sm font-semibold transition"
-                  >
-                    Full brief (PDF)
-                  </a>
-                ) : null}
               </div>
-            </Surface>
+
+              {/* Optional: if you later add PDFs, enable by setting pdfHref in siteData */}
+              {p.pdfHref ? (
+                <a
+                  href={p.pdfHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-5 inline-flex items-center justify-center px-4 py-2.5 rounded-2xl border border-[rgb(var(--line))] bg-white hover:bg-neutral-50 text-sm font-semibold"
+                >
+                  Open PDF
+                </a>
+              ) : null}
+            </Card>
           ))}
         </div>
       </div>

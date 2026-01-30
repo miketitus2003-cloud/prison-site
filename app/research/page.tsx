@@ -1,64 +1,61 @@
-import { Container, Surface, Kicker, H1, H2, P, Bullets, Divider } from "@/components/ui";
+import { Container, Card, Kicker, H1, H2, P, Bullets, Divider, ButtonLink } from "@/components/ui";
 import { SITE } from "@/components/siteData";
 import SlideGallery from "@/components/SlideGallery";
 
 export default function ResearchPage() {
-  const R = SITE.research;
-
   return (
     <Container>
-      <div className="pt-12 md:pt-16 pb-12">
+      <div className="pt-12 sm:pt-16 pb-12">
         <Kicker>Research</Kicker>
-        <H1>Prison education and recidivism</H1>
-        <div className="mt-4 max-w-3xl">
-          <P>{R.oneLine}</P>
+        <H1>{SITE.research.title}</H1>
+
+        <div className="mt-5 max-w-3xl">
+          <P className="text-base sm:text-lg">
+            <span className="font-medium text-[rgb(var(--fg))]">Research question:</span>{" "}
+            {SITE.research.question}
+          </P>
         </div>
 
-        <div className="mt-10 grid lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 space-y-4">
-            <Surface>
-              <H2>Why this matters</H2>
-              <Bullets items={R.whyBullets} />
-            </Surface>
-
-            <Surface>
-              <H2>Research question</H2>
-              <div className="mt-3 max-w-3xl">
-                <P>{R.question}</P>
-              </div>
-
+        <div className="mt-10 grid lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-7 space-y-6">
+            <Card>
+              <H2>Method</H2>
+              <Bullets items={SITE.research.methodBullets} />
               <Divider />
-              <div className="mt-4 text-xs text-white/55">
-                Note: this is a simulated dataset modeled on national patterns. It illustrates direction of effects, not causal estimates.
+              <div className="flex flex-wrap gap-3">
+                <ButtonLink href={SITE.links.analysisRepo} external variant="secondary">
+                  Open analysis repo
+                </ButtonLink>
+                <ButtonLink href="/sources" variant="ghost">
+                  Sources
+                </ButtonLink>
               </div>
-            </Surface>
+            </Card>
+
+            <Card>
+              <H2>Findings</H2>
+              <Bullets items={SITE.research.resultsBullets} />
+            </Card>
           </div>
 
-          <Surface>
-            <H2>Method</H2>
-            <Bullets items={R.methodBullets} />
-          </Surface>
+          <div className="lg:col-span-5 space-y-6">
+            <Card>
+              <H2>Limits</H2>
+              <Bullets items={SITE.research.limitationsBullets} />
+            </Card>
+
+            <Card>
+              <H2>Interpretation</H2>
+              <P>
+                The model results are presented as <span className="font-medium text-[rgb(var(--fg))]">directional evidence</span>.
+                Stronger versions of this work would use administrative program participation data and additional controls.
+              </P>
+            </Card>
+          </div>
         </div>
 
-        <div className="mt-6 grid md:grid-cols-3 gap-4">
-          <Surface>
-            <H2>Key results</H2>
-            <Bullets items={R.resultsBullets} />
-          </Surface>
-
-          <Surface>
-            <H2>Implications</H2>
-            <Bullets items={R.implicationsBullets} />
-          </Surface>
-
-          <Surface>
-            <H2>Next steps</H2>
-            <Bullets items={R.nextStepsBullets} />
-          </Surface>
-        </div>
-
-        <div className="mt-6">
-          <SlideGallery slides={SITE.slides} />
+        <div className="mt-8">
+          <SlideGallery slides={SITE.research.slides} />
         </div>
       </div>
     </Container>

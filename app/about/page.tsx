@@ -1,64 +1,56 @@
-// app/about/page.tsx
-import { Container, Surface, Kicker, H1, H2, P, ButtonLink } from "@/components/ui";
+import { Container, Card, Kicker, H1, H2, P, ButtonLink } from "@/components/ui";
 import { SITE } from "@/components/siteData";
 
 export default function AboutPage() {
   return (
     <Container>
-      <div className="pt-12 md:pt-16 pb-12">
+      <div className="pt-12 sm:pt-16 pb-12">
         <Kicker>About</Kicker>
-        <H1>About</H1>
+        <H1>About this project</H1>
 
-        <div className="mt-4 max-w-3xl">
-          <P>
-            This site is the public-facing version of my work on prison education, reentry, and recidivism.
-            It’s built to read like a research brief: clear question, clear approach, and clear takeaways.
+        <div className="mt-5 max-w-3xl">
+          <P className="text-base sm:text-lg">
+            I built this as a polished, public-facing version of my recidivism work — focused on clarity,
+            structure, and verifiable sourcing.
           </P>
         </div>
 
         <div className="mt-10 grid md:grid-cols-2 gap-4">
-          <Surface>
-            <H2>Project focus</H2>
+          <Card>
+            <H2>What it is</H2>
             <div className="mt-3 space-y-3">
               <P>
-                My main question is how strongly reentry supports relate to recidivism. Because many public datasets
-                don’t track education participation cleanly, I use post-release employment as a measurable proxy and
-                treat the results as directional evidence not a causal claim.
+                A research brief that highlights the question, method, and findings without burying the reader.
               </P>
               <P>
-                The policy briefs connect the research to real world debates around youth sentencing and solitary
-                confinement, focusing on the strongest points and practical implications.
+                A set of policy briefs connected to real debates around youth punishment and solitary confinement.
               </P>
             </div>
+          </Card>
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href="/research" variant="primary">
-                Read the research
-              </ButtonLink>
-              <ButtonLink href="/policy" variant="ghost">
-                Policy briefs
-              </ButtonLink>
-            </div>
-          </Surface>
-
-          <Surface>
+          <Card>
             <H2>Author</H2>
             <div className="mt-3 space-y-3">
               <P>
-                {SITE.author}. This project is part of my portfolio combining analysis, communication, and policy
-                reasoning in a format that’s easy to verify and easy to read.
+                {SITE.author}. This site is part of my portfolio: data analysis + clear writing + policy reasoning.
               </P>
               <P>
-                All citations and primary links are kept on the Sources page.
+                All citations and primary links are centralized on the Sources page.
               </P>
 
-              <div className="mt-6">
-                <ButtonLink href="/sources" variant="secondary">
-                  Sources & references
+              <div className="mt-5 flex flex-wrap gap-3">
+                <ButtonLink href="/research" variant="primary">
+                  Research
+                </ButtonLink>
+                <ButtonLink href="/policy" variant="secondary">
+                  Policy
+                </ButtonLink>
+                <ButtonLink href="/sources" variant="ghost">
+                  Sources
                 </ButtonLink>
               </div>
             </div>
-          </Surface>
+          </Card>
         </div>
       </div>
     </Container>
