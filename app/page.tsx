@@ -15,7 +15,7 @@ export default function OverviewPage() {
             </div>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              <ButtonLink href="/research" variant="solid">
+<ButtonLink href="/research" variant="primary">
                 Read the research
               </ButtonLink>
               <ButtonLink href="/policy" variant="ghost">
