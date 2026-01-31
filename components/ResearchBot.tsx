@@ -1,7 +1,7 @@
-// components/ResearchBot.tsx
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { SITE } from "@/components/siteData";
 
 type Msg = { role: "user" | "assistant"; content: string; ts: number };
 
@@ -9,20 +9,26 @@ function cx(...c: Array<string | false | undefined>) {
   return c.filter(Boolean).join(" ");
 }
 
-/**
- * Free + impressive: local "research assistant" that answers using your site context.
- * Later you can replace `answerLocally()` with a real API route (Option 2).
- */
+function formatBullets(lines: string[]) {
+  return lines.map((x) => `• ${x}`).join("\n");
+}
+
+function safeLower(s: string) {
+  return (s || "").toLowerCase();
+}
+
 export default function ResearchBot() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<"ask" | "about">("ask");
+  const [unread, setUnread] = useState(1);
+
   const [msgs, setMsgs] = useState<Msg[]>(() => [
     {
       role: "assistant",
       content:
-        "Hey — I’m your research assistant. Ask me about the model, findings, limitations, or the policy briefs. I’ll keep it short and evidence-focused.",
+        "Ask me about the model, findings, limitations, or the policy briefs. I answer using what is on this site.",
       ts: Date.now(),
     },
   ]);
@@ -32,7 +38,6 @@ export default function ResearchBot() {
 
   useEffect(() => {
     if (!open) return;
-    // focus after opening
     const t = setTimeout(() => inputRef.current?.focus(), 120);
     return () => clearTimeout(t);
   }, [open]);
@@ -42,130 +47,180 @@ export default function ResearchBot() {
     scrollRef.current?.scrollTo({ top: 999999, behavior: "smooth" });
   }, [open, msgs.length, busy]);
 
-  // You can later populate this from a facts/stats JSON file or a "facts" page.
-  const knowledge = useMemo(
-    () => ({
-      title: "Prison Education & Recidivism — Michael Parham",
-      scope:
-        "This is a research brief on recidivism and reentry support. The analysis uses post-release employment as a proxy for education/reentry support because direct program participation data is often missing.",
-      model:
-        "Model: logistic regression (Logit). Outcome: recidivism (reoffended vs did not). Predictors: employed after release, offense type, time served (years).",
-      findings: [
-        "Employment after release is associated with lower likelihood of reoffending (directional association).",
-        "Violent offense type is associated with higher likelihood of return (directional association).",
-        "Time served was not statistically significant in the current run.",
-      ],
-      limitations: [
-        "The current run is not a causal claim (correlation/association, not causation).",
-        "Employment is a proxy — measurable but not identical to program completion.",
-        "Better versions add administrative education records and more controls (demographics, parole, etc.).",
-      ],
-      policy: {
-        teens: [
-          "High-stakes punishments are irreversible; risk of wrongful conviction matters.",
-          "Youth are more vulnerable to pressure/false confessions.",
-          "Equity concerns: extreme sentencing not applied equally.",
-        ],
-        solitary: [
-          "For youth, isolation increases risk of anxiety/depression and self-harm.",
-          "Often used for staffing/rules, not because it improves outcomes.",
-          "Better alternatives: step-down programs, clinical care, strict limits and oversight.",
-        ],
-      },
-      tone:
-        "Be concise. If uncertain, say so. Prefer bullet points. Encourage checking Sources page for verification.",
-    }),
-    []
-  );
+  useEffect(() => {
+    if (open) setUnread(0);
+  }, [open]);
 
-  const suggestions = useMemo(
+  const knowledge = useMemo(() => {
+    return {
+      title: SITE.overview.title,
+      lead: SITE.overview.lead,
+      question: SITE.research.question,
+      methodBullets: SITE.research.methodBullets,
+      resultsBullets: SITE.research.resultsBullets,
+      limitationsBullets: SITE.research.limitationsBullets,
+      policy: SITE.policy,
+      sources: SITE.sources?.primaryLinks || [],
+      repo: SITE.links.analysisRepo,
+      author: SITE.author,
+    };
+  }, []);
+
+  const quickActions = useMemo(
     () => [
-      "Summarize the main finding in 3 bullets.",
-      "Explain the model like I’m a recruiter.",
-      "What are the biggest limitations I should admit?",
-      "Give me a 20-second summary for an interview.",
-      "What should I say if someone questions the proxy?",
-      "Turn the policy brief into a punchy paragraph.",
+      { label: "3-bullet summary", prompt: "Summarize the main finding in 3 bullets." },
+      { label: "Explain for a recruiter", prompt: "Explain the model like I’m a recruiter." },
+      { label: "Limitations to admit", prompt: "What are the biggest limitations I should admit?" },
+      { label: "Interview elevator pitch", prompt: "Give me a 20-second summary for an interview." },
+      { label: "Defend the proxy", prompt: "What should I say if someone questions the proxy?" },
+      { label: "Turn a policy brief into a paragraph", prompt: "Turn the youth sentencing brief into a punchy paragraph." },
     ],
     []
   );
 
   function answerLocally(userText: string): string {
-    const q = userText.toLowerCase();
+    const q = safeLower(userText);
 
-    // super simple routing — keeps it fast & believable, not “generic chatbot”
-    if (q.includes("interview") || q.includes("recruiter") || q.includes("20-second") || q.includes("elevator")) {
+    const wantsInterview =
+      q.includes("interview") ||
+      q.includes("recruiter") ||
+      q.includes("elevator") ||
+      q.includes("20-second") ||
+      q.includes("pitch");
+
+    const wantsMethod =
+      q.includes("model") ||
+      q.includes("logistic") ||
+      q.includes("logit") ||
+      q.includes("method") ||
+      q.includes("predictor") ||
+      q.includes("outcome");
+
+    const wantsLimits =
+      q.includes("limit") ||
+      q.includes("weak") ||
+      q.includes("bias") ||
+      q.includes("proxy") ||
+      q.includes("causal") ||
+      q.includes("causation");
+
+    const wantsFindings =
+      q.includes("finding") ||
+      q.includes("result") ||
+      q.includes("summary") ||
+      q.includes("key") ||
+      q.includes("takeaway");
+
+    const wantsPolicy =
+      q.includes("policy") ||
+      q.includes("death") ||
+      q.includes("teen") ||
+      q.includes("juvenile") ||
+      q.includes("solitary") ||
+      q.includes("isolation");
+
+    if (wantsInterview) {
       return [
-        "Here’s a clean interview-style summary:",
+        "Here is a clean interview summary:",
         "",
-        "• I analyzed how reentry support relates to recidivism using post-release employment as a measurable proxy.",
+        "• I built a research brief on recidivism and reentry support using post-release employment as a measurable proxy.",
         "• I modeled recidivism with logistic regression using employment, offense type, and time served.",
-        "• Employment aligned with lower reoffending, offense type mattered, and time served wasn’t significant in this run.",
+        "• Employment aligned with lower reoffending, offense type mattered, and time served was not significant in this run.",
         "",
-        "If you want, I can tighten it to a single sentence."
+        "If you want, I can rewrite that as one sentence or as a resume bullet."
       ].join("\n");
     }
 
-    if (q.includes("model") || q.includes("logistic") || q.includes("logit") || q.includes("method")) {
+    if (wantsMethod) {
       return [
-        "Method overview (quick + clear):",
-        `• ${knowledge.model}`,
+        "Method, quick and clear:",
+        "",
+        `Research question: ${knowledge.question}`,
+        "",
+        formatBullets(knowledge.methodBullets),
         "",
         "Interpretation:",
-        "• Coefficients estimate how each predictor changes the odds of recidivism (holding others constant).",
-        "• I treat results as directional evidence, not proof of causation.",
+        "• The output is directional evidence. It is not proof of causation.",
       ].join("\n");
     }
 
-    if (q.includes("limitations") || q.includes("limit") || q.includes("weakness") || q.includes("proxy")) {
+    if (wantsLimits) {
       return [
-        "Limitations I’d state confidently:",
-        ...knowledge.limitations.map((x) => `• ${x}`),
+        "Limitations I would say confidently:",
         "",
-        "How to defend the proxy (without over-claiming):",
-        "• Employment is measurable and plausibly connected to education/reentry support.",
-        "• It’s not a perfect stand-in — so conclusions stay conservative.",
+        formatBullets(knowledge.limitationsBullets),
+        "",
+        "How to defend the proxy without over-claiming:",
+        "• Employment is measurable and connected to reentry support in the real world.",
+        "• It is not the same thing as program completion, so I keep the conclusions conservative.",
       ].join("\n");
     }
 
-    if (q.includes("policy") || q.includes("death") || q.includes("teen") || q.includes("juvenile")) {
+    if (wantsPolicy) {
+      const aboutSolitary = q.includes("solitary") || q.includes("isolation");
+      const aboutTeens = q.includes("death") || q.includes("teen") || q.includes("juvenile");
+
+      if (aboutSolitary) {
+        const item = knowledge.policy.find((p) => safeLower(p.title).includes("solitary")) || knowledge.policy[1];
+        return [
+          `Policy brief: ${item.title}`,
+          "",
+          item.oneLine,
+          "",
+          "Key points:",
+          formatBullets(item.bullets),
+          "",
+          `Bottom line: ${item.bottomLine}`,
+          "",
+          "If you want sources for this section, check the Sources page."
+        ].join("\n");
+      }
+
+      if (aboutTeens) {
+        const item =
+          knowledge.policy.find((p) => safeLower(p.title).includes("teens")) || knowledge.policy[0];
+        return [
+          `Policy brief: ${item.title}`,
+          "",
+          item.oneLine,
+          "",
+          "Key points:",
+          formatBullets(item.bullets),
+          "",
+          `Bottom line: ${item.bottomLine}`,
+          "",
+          "If you want sources for this section, check the Sources page."
+        ].join("\n");
+      }
+
       return [
-        "Policy brief — youth sentencing (strong points only):",
-        ...knowledge.policy.teens.map((x) => `• ${x}`),
+        "Policy briefs on this site:",
         "",
-        "Bottom line:",
-        "• If the system can be wrong, punishment shouldn’t be irreversible."
+        ...knowledge.policy.map((p) => `• ${p.title}`),
+        "",
+        "Tell me which one you want and I will summarize it tightly."
       ].join("\n");
     }
 
-    if (q.includes("solitary") || q.includes("isolation")) {
-      return [
-        "Policy brief — solitary confinement (youth-focused):",
-        ...knowledge.policy.solitary.map((x) => `• ${x}`),
-        "",
-        "Bottom line:",
-        "• Long isolation creates harm and can make reentry harder."
-      ].join("\n");
-    }
-
-    if (q.includes("findings") || q.includes("results") || q.includes("summary") || q.includes("key")) {
+    if (wantsFindings) {
       return [
         "Key takeaways:",
-        ...knowledge.findings.map((x) => `• ${x}`),
         "",
-        "Want me to rewrite this as a resume bullet or a short abstract?"
+        formatBullets(knowledge.resultsBullets),
+        "",
+        "Want that as a resume bullet, an abstract, or a caption for the Research page?"
       ].join("\n");
     }
 
-    // default helpful response
     return [
-      "I can help with that. Tell me what you want the output to be:",
+      "Tell me what output you want and I will format it:",
+      "",
       "• 3-bullet summary",
       "• short paragraph",
       "• interview answer",
       "• limitations section",
       "",
-      "If you mention “research” or “policy” I’ll tailor it tighter."
+      "If you mention “research” or “policy” I will make it tighter."
     ].join("\n");
   }
 
@@ -177,11 +232,9 @@ export default function ResearchBot() {
     setInput("");
     setBusy(true);
 
-    // Fake "thinking" delay to feel premium (fast but not instant)
-    await new Promise((r) => setTimeout(r, 450));
+    await new Promise((r) => setTimeout(r, 380));
 
     const a = answerLocally(t);
-
     setMsgs((m) => [...m, { role: "assistant", content: a, ts: Date.now() }]);
     setBusy(false);
   }
@@ -190,15 +243,14 @@ export default function ResearchBot() {
     setMsgs([
       {
         role: "assistant",
-        content:
-          "Chat cleared. Ask me about the model, findings, limitations, or the policy briefs.",
+        content: "Chat cleared. Ask about methods, findings, limitations, or the policy briefs.",
         ts: Date.now(),
       },
     ]);
     setTab("ask");
+    setUnread(0);
   }
 
-  // keyboard shortcuts
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (!open) return;
@@ -214,78 +266,90 @@ export default function ResearchBot() {
 
   return (
     <>
-      {/* Floating launcher */}
+      {/* Launcher */}
       <div className="fixed right-5 bottom-5 z-[99999]">
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setOpen(true);
+            setUnread(0);
+          }}
           className={cx(
-            "group relative flex items-center gap-3 rounded-full px-4 py-3",
-            "bg-white/10 backdrop-blur-md ring-1 ring-white/15 shadow-[0_18px_55px_rgba(0,0,0,0.35)]",
-            "hover:bg-white/14 active:scale-[0.98] transition",
-            // make it more obvious
-            "min-w-[190px]"
+            "group relative flex items-center gap-3 rounded-full px-5 py-3.5",
+            "bg-white/95 text-black border border-black/10 shadow-[0_18px_55px_rgba(0,0,0,0.18)]",
+            "hover:shadow-[0_24px_75px_rgba(0,0,0,0.22)] active:scale-[0.985] transition",
+            "min-w-[230px]"
           )}
           aria-label="Open research assistant"
         >
-          <span className="relative grid place-items-center h-10 w-10 rounded-full overflow-hidden">
-            <span className="absolute inset-0 bg-gradient-to-br from-indigo-400/90 via-cyan-300/90 to-emerald-300/90" />
-            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-white/10" />
-            <span className="relative text-neutral-950 font-black">AI</span>
+          {/* glow ring */}
+          <span className="pointer-events-none absolute -inset-1 rounded-full opacity-0 group-hover:opacity-100 transition">
+            <span className="absolute inset-0 rounded-full blur-xl bg-gradient-to-r from-indigo-300/35 via-cyan-300/35 to-emerald-300/35" />
+          </span>
+
+          <span className="relative grid place-items-center h-11 w-11 rounded-full overflow-hidden border border-black/10">
+            <span className="absolute inset-0 bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-300" />
+            <span className="relative font-black text-neutral-950 tracking-tight">AI</span>
           </span>
 
           <span className="text-left">
-            <span className="block text-sm font-semibold text-white leading-tight">
+            <span className="block text-sm font-semibold leading-tight">
               Research Assistant
             </span>
-            <span className="block text-xs text-white/70 leading-tight">
-              Ask about findings & methods
+            <span className="block text-xs text-black/60 leading-tight">
+              Methods, findings, briefs
             </span>
           </span>
 
-          <span className="ml-auto text-white/60 text-xs hidden sm:inline">
-            ⌘K
-          </span>
+          {/* unread dot */}
+          {unread > 0 ? (
+            <span className="ml-auto relative">
+              <span className="absolute -inset-1 rounded-full blur-md bg-emerald-300/40" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            </span>
+          ) : (
+            <span className="ml-auto text-black/40 text-xs hidden sm:inline">
+              ⌘K
+            </span>
+          )}
         </button>
       </div>
 
       {/* Modal */}
       {open ? (
         <div className="fixed inset-0 z-[99998]">
-          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"
             onClick={() => setOpen(false)}
           />
 
-          {/* Panel */}
-          <div className="absolute right-5 bottom-5 w-[92vw] max-w-[430px]">
-            <div className="overflow-hidden rounded-3xl ring-1 ring-white/12 bg-neutral-950/80 backdrop-blur-xl shadow-[0_28px_90px_rgba(0,0,0,0.55)]">
+          <div className="absolute right-5 bottom-5 w-[92vw] max-w-[460px]">
+            <div className="overflow-hidden rounded-3xl border border-black/10 bg-white shadow-[0_32px_120px_rgba(0,0,0,0.25)]">
               {/* Header */}
-              <div className="p-4 border-b border-white/10">
+              <div className="p-4 border-b border-black/10">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-2xl bg-white/10 ring-1 ring-white/10 grid place-items-center overflow-hidden">
+                  <div className="h-10 w-10 rounded-2xl border border-black/10 grid place-items-center overflow-hidden">
                     <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-300" />
                   </div>
 
                   <div className="min-w-0">
-                    <div className="text-sm font-semibold text-white leading-tight">
+                    <div className="text-sm font-semibold text-black leading-tight">
                       Research Assistant
                     </div>
-                    <div className="text-xs text-white/60 truncate">
-                      Evidence-first answers • press Esc to close
+                    <div className="text-xs text-black/55 truncate">
+                      Uses the content on this site. Press Esc to close.
                     </div>
                   </div>
 
                   <div className="ml-auto flex items-center gap-2">
                     <button
                       onClick={clearChat}
-                      className="text-xs px-3 py-1.5 rounded-full bg-white/8 hover:bg-white/12 ring-1 ring-white/10 text-white/80 transition"
+                      className="text-xs px-3 py-1.5 rounded-full bg-black/[0.04] hover:bg-black/[0.06] border border-black/10 text-black/80 transition"
                     >
                       Clear
                     </button>
                     <button
                       onClick={() => setOpen(false)}
-                      className="text-xs px-3 py-1.5 rounded-full bg-white/8 hover:bg-white/12 ring-1 ring-white/10 text-white/80 transition"
+                      className="text-xs px-3 py-1.5 rounded-full bg-black/[0.04] hover:bg-black/[0.06] border border-black/10 text-black/80 transition"
                     >
                       Close
                     </button>
@@ -297,10 +361,10 @@ export default function ResearchBot() {
                   <button
                     onClick={() => setTab("ask")}
                     className={cx(
-                      "px-3 py-2 rounded-2xl text-xs font-semibold ring-1 transition",
+                      "px-3 py-2 rounded-2xl text-xs font-semibold border transition",
                       tab === "ask"
-                        ? "bg-white text-neutral-950 ring-white/10"
-                        : "bg-white/5 text-white/70 ring-white/10 hover:bg-white/10"
+                        ? "bg-black text-white border-black"
+                        : "bg-white text-black/70 border-black/10 hover:bg-black/[0.03]"
                     )}
                   >
                     Ask
@@ -308,13 +372,13 @@ export default function ResearchBot() {
                   <button
                     onClick={() => setTab("about")}
                     className={cx(
-                      "px-3 py-2 rounded-2xl text-xs font-semibold ring-1 transition",
+                      "px-3 py-2 rounded-2xl text-xs font-semibold border transition",
                       tab === "about"
-                        ? "bg-white text-neutral-950 ring-white/10"
-                        : "bg-white/5 text-white/70 ring-white/10 hover:bg-white/10"
+                        ? "bg-black text-white border-black"
+                        : "bg-white text-black/70 border-black/10 hover:bg-black/[0.03]"
                     )}
                   >
-                    What I know
+                    What I use
                   </button>
                 </div>
               </div>
@@ -322,47 +386,45 @@ export default function ResearchBot() {
               {/* Body */}
               <div className="p-4">
                 {tab === "about" ? (
-                  <div className="space-y-3 text-sm text-white/75 leading-relaxed">
-                    <p className="text-white/85">
-                      I answer using your site’s research framing:
-                    </p>
-                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3">
-                      <div className="text-xs uppercase tracking-widest text-white/60">
+                  <div className="space-y-3 text-sm text-black/70 leading-relaxed">
+                    <div className="rounded-2xl bg-black/[0.03] border border-black/10 p-3">
+                      <div className="text-[11px] uppercase tracking-widest text-black/50">
                         Scope
                       </div>
-                      <div className="mt-2">{knowledge.scope}</div>
+                      <div className="mt-2">{knowledge.lead}</div>
                     </div>
-                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3">
-                      <div className="text-xs uppercase tracking-widest text-white/60">
-                        Model
+
+                    <div className="rounded-2xl bg-black/[0.03] border border-black/10 p-3">
+                      <div className="text-[11px] uppercase tracking-widest text-black/50">
+                        Research question
                       </div>
-                      <div className="mt-2">{knowledge.model}</div>
+                      <div className="mt-2">{knowledge.question}</div>
                     </div>
-                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3">
-                      <div className="text-xs uppercase tracking-widest text-white/60">
-                        Key findings
+
+                    <div className="rounded-2xl bg-black/[0.03] border border-black/10 p-3">
+                      <div className="text-[11px] uppercase tracking-widest text-black/50">
+                        Key sections I can summarize
                       </div>
-                      <ul className="mt-2 space-y-1">
-                        {knowledge.findings.map((x) => (
-                          <li key={x}>• {x}</li>
-                        ))}
-                      </ul>
+                      <div className="mt-2">
+                        • Method • Findings • Limits • Policy briefs
+                      </div>
                     </div>
-                    <div className="text-xs text-white/55">
-                      Next step (later): connect me to a Facts/Stats JSON so I can cite numbers from your page.
+
+                    <div className="text-[11px] text-black/45">
+                      Later we can connect this bot to a Stats page so it can answer with numbers from your site.
                     </div>
                   </div>
                 ) : (
                   <>
-                    {/* Suggestions */}
+                    {/* Quick actions */}
                     <div className="flex flex-wrap gap-2">
-                      {suggestions.slice(0, 4).map((s) => (
+                      {quickActions.slice(0, 5).map((s) => (
                         <button
-                          key={s}
-                          onClick={() => send(s)}
-                          className="text-xs px-3 py-2 rounded-2xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 text-white/80 transition"
+                          key={s.label}
+                          onClick={() => send(s.prompt)}
+                          className="text-xs px-3 py-2 rounded-2xl bg-black/[0.03] hover:bg-black/[0.06] border border-black/10 text-black/75 transition"
                         >
-                          {s}
+                          {s.label}
                         </button>
                       ))}
                     </div>
@@ -377,10 +439,10 @@ export default function ResearchBot() {
                           <div
                             key={m.ts + m.role}
                             className={cx(
-                              "max-w-[90%] rounded-3xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap",
+                              "max-w-[92%] rounded-3xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap",
                               m.role === "user"
-                                ? "ml-auto bg-white text-neutral-950"
-                                : "bg-white/7 text-white ring-1 ring-white/10"
+                                ? "ml-auto bg-black text-white"
+                                : "bg-black/[0.03] border border-black/10 text-black/80"
                             )}
                           >
                             {m.content}
@@ -388,9 +450,9 @@ export default function ResearchBot() {
                         ))}
 
                         {busy ? (
-                          <div className="max-w-[90%] rounded-3xl px-4 py-3 text-sm bg-white/7 text-white ring-1 ring-white/10">
-                            <span className="inline-flex items-center gap-2 text-white/80">
-                              <span className="h-2 w-2 rounded-full bg-white/70 animate-pulse" />
+                          <div className="max-w-[92%] rounded-3xl px-4 py-3 text-sm bg-black/[0.03] border border-black/10 text-black/70">
+                            <span className="inline-flex items-center gap-2">
+                              <span className="h-2 w-2 rounded-full bg-black/40 animate-pulse" />
                               Thinking…
                             </span>
                           </div>
@@ -409,9 +471,9 @@ export default function ResearchBot() {
                             if (e.key === "Enter") send(input);
                           }}
                           placeholder="Ask about methods, results, limitations…"
-                          className="w-full rounded-2xl bg-white/5 ring-1 ring-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20"
+                          className="w-full rounded-2xl bg-white border border-black/10 px-4 py-3 text-sm text-black placeholder:text-black/40 outline-none focus:ring-2 focus:ring-black/10"
                         />
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-white/40">
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-black/35">
                           Enter
                         </div>
                       </div>
@@ -422,19 +484,39 @@ export default function ResearchBot() {
                         className={cx(
                           "rounded-2xl px-4 py-3 text-sm font-semibold transition",
                           busy
-                            ? "bg-white/10 text-white/40 ring-1 ring-white/10 cursor-not-allowed"
-                            : "bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-300 text-neutral-950 hover:opacity-95"
+                            ? "bg-black/10 text-black/40 border border-black/10 cursor-not-allowed"
+                            : "bg-gradient-to-br from-indigo-500 via-cyan-400 to-emerald-400 text-neutral-950 hover:opacity-95"
                         )}
                       >
                         Send
                       </button>
                     </div>
 
-                    <div className="mt-2 text-[11px] text-white/45">
-                      Tip: press <span className="text-white/70">⌘K</span> to focus input • <span className="text-white/70">Esc</span> to close
+                    <div className="mt-2 text-[11px] text-black/45">
+                      Tip: press <span className="text-black/70">⌘K</span> to focus input. Press <span className="text-black/70">Esc</span> to close.
                     </div>
                   </>
                 )}
+              </div>
+
+              {/* Footer quick links */}
+              <div className="px-4 py-3 border-t border-black/10 bg-white">
+                <div className="flex items-center justify-between text-xs text-black/50">
+                  <span>{knowledge.author}</span>
+                  <div className="flex items-center gap-3">
+                    <a className="hover:text-black/80 transition" href="/sources">
+                      Sources
+                    </a>
+                    <a
+                      className="hover:text-black/80 transition"
+                      href={knowledge.repo}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Repo
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
