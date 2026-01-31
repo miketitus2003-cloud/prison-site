@@ -135,7 +135,7 @@ export default function SlideGallery({
         </div>
 
         {/* Slide stack */}
-        <div className="lg:col-span-9">
+        <div className="lg:col-span-10 lg:col-start-2">
           <div
             className={[
               "space-y-6",

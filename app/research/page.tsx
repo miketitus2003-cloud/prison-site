@@ -19,7 +19,11 @@ export default function ResearchPage() {
       <div className="pt-12 sm:pt-16 pb-12">
         <Kicker>Research</Kicker>
         <H1>{SITE.research.title}</H1>
-
+        <div className="mt-4 max-w-3xl">
+  <P>
+    This page walks through the research narrative in slide form first, then summarizes the method and findings below.
+  </P>
+</div>
         {/* Cinematic, widescreen scroll walkthrough (single source of truth) */}
         <div className="mt-8">
           <SlideGallery
