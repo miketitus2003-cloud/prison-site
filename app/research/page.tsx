@@ -9,13 +9,13 @@ export default function ResearchPage() {
         <Kicker>Research</Kicker>
         <H1>{SITE.research.title}</H1>
 
-        <div className="mt-5 max-w-3xl">
-          <P className="text-base sm:text-lg">
-            <span className="font-medium text-[rgb(var(--fg))]">Research question:</span>{" "}
-            {SITE.research.question}
-          </P>
-        </div>
-
+       <div className="mt-10">
+  <SlideGallery
+    slides={SLIDES}
+    title="Slide walkthrough"
+    subtitle="Scroll through the story. Each panel is a full widescreen slide, presented like a research narrative."
+  />
+</div>
         <div className="mt-10 grid lg:grid-cols-12 gap-6">
           <div className="lg:col-span-7 space-y-6">
             <Card>
