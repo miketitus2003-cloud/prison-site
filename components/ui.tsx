@@ -51,7 +51,9 @@ export function H1({ children }: { children: React.ReactNode }) {
 }
 
 export function H2({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-lg md:text-xl font-semibold text-black">{children}</h2>;
+  return (
+    <h2 className="text-lg md:text-xl font-semibold text-black">{children}</h2>
+  );
 }
 
 export function P({
@@ -61,17 +63,19 @@ export function P({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <p className={cx("text-black/70 leading-relaxed", className)}>{children}</p>;
+  return (
+    <p className={cx("text-black/70 leading-relaxed", className)}>{children}</p>
+  );
 }
 
-/* Lists, dividers, buttons */
+/* Lists, dividers */
 
 export function Bullets({ items }: { items: string[] }) {
   return (
     <ul className="mt-4 space-y-2 text-sm text-black/70 leading-relaxed">
       {items.map((b) => (
         <li key={b} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-black/45" />
+          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-black/45 shrink-0" />
           <span>{b}</span>
         </li>
       ))}
@@ -83,10 +87,14 @@ export function Divider() {
   return <div className="my-6 h-px bg-black/10" />;
 }
 
+/* Buttons */
+
 /**
- * IMPORTANT FIX:
- * The old styling could produce a dark pill with dark text (looks blank).
- * These variants guarantee readable text on a white site.
+ * ButtonLink (hardened)
+ * Fixes the “black pill with invisible text” issue by:
+ * - forcing text color per variant
+ * - adding focus styles
+ * - preventing accidental class collisions from removing text color
  */
 export function ButtonLink({
   href,
@@ -102,17 +110,25 @@ export function ButtonLink({
   className?: string;
 }) {
   const base =
-    "inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-sm font-semibold transition select-none";
+    "inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold transition select-none whitespace-nowrap";
+
+  const focus =
+    "focus:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 
   const styles =
     variant === "primary"
-      ? "bg-neutral-900 text-white hover:bg-neutral-800"
+      ? // Primary: always readable on light site
+        "bg-neutral-900 text-white hover:bg-neutral-800 active:bg-neutral-900"
       : variant === "secondary"
-      ? "bg-white text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50"
-      : "bg-transparent text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50";
+      ? // Secondary: white surface button
+        "bg-white text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50 active:bg-neutral-100"
+      : // Ghost: subtle outline
+        "bg-transparent text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50 active:bg-neutral-100";
 
-  const cls = cx(base, styles, className);
+  const cls = cx(base, focus, styles, className);
 
+  // If someone accidentally passes empty children, show nothing but still stable
+  // (not throwing — just rendering as-is)
   if (external) {
     return (
       <a href={href} target="_blank" rel="noreferrer" className={cls}>
