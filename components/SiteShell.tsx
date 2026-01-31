@@ -1,6 +1,8 @@
 // components/SiteShell.tsx
+"use client";
+
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { SITE } from "@/components/siteData";
 
 const NAV = [
@@ -19,39 +21,38 @@ function cx(...c: Array<string | false | undefined>) {
 }
 
 export default function SiteShell({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+
+  const nav = useMemo(() => NAV, []);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#f7f8fb] text-black">
-      {/* background visuals */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-indigo-200/55 via-sky-200/45 to-emerald-200/35 blur-3xl" />
-        <div className="absolute -bottom-48 -right-48 h-[560px] w-[560px] rounded-full bg-gradient-to-br from-rose-200/50 via-amber-200/35 to-indigo-200/35 blur-3xl" />
-        <div className="absolute inset-0 opacity-[0.12]" style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, rgba(0,0,0,0.12) 1px, transparent 0)",
-          backgroundSize: "22px 22px",
-        }} />
-      </div>
-
-      <header className="sticky top-0 z-50 border-b border-black/10 bg-white/72 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-black/10 bg-white/80 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-3 min-w-0">
-            <span className="h-10 w-10 rounded-2xl border border-black/10 bg-white shadow-sm overflow-hidden grid place-items-center">
-              <span className="h-7 w-7 rounded-xl bg-gradient-to-br from-indigo-400 via-sky-300 to-emerald-300" />
+          <Link href="/" className="flex items-center gap-3">
+            <span className="h-10 w-10 rounded-full border border-black/10 bg-white shadow-soft grid place-items-center">
+              <span className="h-5 w-5 rounded-full bg-gradient-to-br from-indigo-600 via-sky-500 to-emerald-500" />
             </span>
-
-            <span className="leading-tight min-w-0">
-              <span className="block text-sm font-semibold text-black/90 truncate">
+            <span className="leading-tight">
+              <span className="block text-sm font-semibold text-black/85">
                 {SITE.overview.title}
               </span>
-              <span className="block text-xs text-black/55 truncate">
+              <span className="block text-xs text-black/55">
                 {SITE.overview.subtitle}
               </span>
             </span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="ml-auto hidden lg:flex items-center gap-1">
-            {NAV.map((n) => (
+          <nav className="ml-auto hidden lg:flex items-center gap-2">
+            {nav.map((n) => (
               <Link
                 key={n.href}
                 href={n.href}
@@ -60,60 +61,70 @@ export default function SiteShell({ children }: { children: ReactNode }) {
                 {n.label}
               </Link>
             ))}
-
-            <Link
-              href="/stats"
-              className="ml-1 px-4 py-2 rounded-full text-sm font-semibold bg-neutral-900 text-white hover:bg-neutral-800 transition shadow-sm"
-            >
-              Stats Lab
-            </Link>
           </nav>
 
-          {/* Mobile menu */}
+          {/* Mobile */}
           <div className="ml-auto lg:hidden flex items-center gap-2">
             <Link
               href="/stats"
-              className="px-3 py-2 rounded-full text-sm font-semibold bg-neutral-900 text-white hover:bg-neutral-800 transition"
+              className="px-3 py-2 rounded-full text-sm font-semibold bg-black text-white hover:opacity-90 transition"
             >
               Stats
             </Link>
-
-            <details className="relative">
-              <summary
-                className={cx(
-                  "list-none cursor-pointer select-none",
-                  "px-3 py-2 rounded-full text-sm font-semibold",
-                  "bg-white ring-1 ring-black/10 hover:bg-neutral-50 transition"
-                )}
-              >
-                Menu
-              </summary>
-
-              <div className="absolute right-0 mt-2 w-[260px] rounded-3xl bg-white ring-1 ring-black/10 shadow-[0_22px_80px_rgba(0,0,0,0.16)] overflow-hidden">
-                <div className="p-2">
-                  {NAV.map((n) => (
-                    <Link
-                      key={n.href}
-                      href={n.href}
-                      className="block px-4 py-3 rounded-2xl text-sm font-semibold text-black/80 hover:bg-neutral-50 transition"
-                    >
-                      {n.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </details>
+            <button
+              onClick={() => setOpen(true)}
+              className="px-3 py-2 rounded-full text-sm font-semibold bg-white ring-1 ring-black/10 hover:bg-neutral-50 transition"
+              aria-label="Open menu"
+            >
+              Menu
+            </button>
           </div>
         </div>
       </header>
 
+      {/* Mobile drawer */}
+      {open ? (
+        <div className="fixed inset-0 z-[9999] lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/35"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute right-0 top-0 h-full w-[86vw] max-w-[360px] bg-white shadow-soft ring-1 ring-black/10">
+            <div className="p-4 border-b border-black/10 flex items-center justify-between">
+              <div className="text-sm font-semibold text-black">Navigation</div>
+              <button
+                onClick={() => setOpen(false)}
+                className="px-3 py-2 rounded-full text-sm font-semibold bg-white ring-1 ring-black/10 hover:bg-neutral-50 transition"
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-3">
+              {nav.map((n) => (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  onClick={() => setOpen(false)}
+                  className="block px-4 py-3 rounded-2xl text-sm font-semibold text-black/80 hover:bg-black/5 transition"
+                >
+                  {n.label}
+                </Link>
+              ))}
+              <div className="mt-3 px-4 py-3 rounded-2xl bg-neutral-50 ring-1 ring-black/10 text-sm text-black/70">
+                This site is evidence focused and sources are centralized in Sources and Stats Lab.
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <main className="relative">{children}</main>
 
-      <footer className="border-t border-black/10 mt-16 bg-white/60">
+      <footer className="border-t border-black/10 mt-16">
         <div className="max-w-6xl mx-auto px-4 py-10 text-sm text-black/55 flex flex-wrap items-center justify-between gap-3">
           <div>© 2026 {SITE.author}</div>
           <div className="text-black/45">
-            Evidence is centralized on Sources and Stats Lab.
+            Evidence and citations are centralized on Sources and Stats Lab.
           </div>
         </div>
       </footer>

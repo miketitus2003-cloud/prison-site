@@ -12,7 +12,6 @@ export function Container({ children }: { children: React.ReactNode }) {
   return <div className="max-w-6xl mx-auto px-4">{children}</div>;
 }
 
-// Light-theme surface by default (works on white backgrounds)
 export function Surface({
   children,
   className,
@@ -23,7 +22,7 @@ export function Surface({
   return (
     <div
       className={cx(
-        "rounded-3xl bg-white ring-1 ring-black/10 shadow-[0_16px_60px_rgba(0,0,0,0.06)] p-6",
+        "rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-6",
         className
       )}
     >
@@ -63,38 +62,82 @@ export function P({
   children: React.ReactNode;
   className?: string;
 }) {
-  return (
-    <p className={cx("text-black/70 leading-relaxed", className)}>{children}</p>
-  );
+  return <p className={cx("text-black/70 leading-relaxed", className)}>{children}</p>;
 }
 
-/* Lists, dividers */
+/* Utilities */
+
+export function Divider() {
+  return <div className="my-6 h-px bg-black/10" />;
+}
 
 export function Bullets({ items }: { items: string[] }) {
   return (
     <ul className="mt-4 space-y-2 text-sm text-black/70 leading-relaxed">
       {items.map((b) => (
         <li key={b} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-black/45 shrink-0" />
+          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-black/45" />
           <span>{b}</span>
         </li>
       ))}
     </ul>
+}
+
+/* New: badge + callout */
+
+export function Badge({
+  children,
+  tone = "neutral",
+}: {
+  children: React.ReactNode;
+  tone?: "neutral" | "good" | "warn" | "accent";
+}) {
+  const styles =
+    tone === "good"
+      ? "bg-emerald-50 text-emerald-900 ring-emerald-200"
+      : tone === "warn"
+      ? "bg-amber-50 text-amber-900 ring-amber-200"
+      : tone === "accent"
+      ? "bg-indigo-50 text-indigo-900 ring-indigo-200"
+      : "bg-neutral-50 text-black/80 ring-black/10";
+  return (
+    <span className={cx("inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ring-1", styles)}>
+      {children}
+    </span>
   );
 }
 
-export function Divider() {
-  return <div className="my-6 h-px bg-black/10" />;
+export function Callout({
+  title,
+  children,
+  tone = "neutral",
+}: {
+  title: string;
+  children: React.ReactNode;
+  tone?: "neutral" | "good" | "warn" | "accent";
+}) {
+  const styles =
+    tone === "good"
+      ? "bg-emerald-50 ring-emerald-200"
+      : tone === "warn"
+      ? "bg-amber-50 ring-amber-200"
+      : tone === "accent"
+      ? "bg-indigo-50 ring-indigo-200"
+      : "bg-neutral-50 ring-black/10";
+
+  return (
+    <div className={cx("rounded-3xl ring-1 p-5", styles)}>
+      <div className="text-sm font-semibold text-black">{title}</div>
+      <div className="mt-2 text-sm text-black/70 leading-relaxed">{children}</div>
+    </div>
+  );
 }
 
-/* Buttons */
-
 /**
- * ButtonLink (hardened)
- * Fixes the “black pill with invisible text” issue by:
- * - forcing text color per variant
- * - adding focus styles
- * - preventing accidental class collisions from removing text color
+ * ButtonLink
+ * Fixes the “blank black pill” problem:
+ * - If children is empty, it falls back to a safe label.
+ * - Primary is a tasteful accent gradient that still reads clean on white pages.
  */
 export function ButtonLink({
   href,
@@ -110,36 +153,31 @@ export function ButtonLink({
   className?: string;
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold transition select-none whitespace-nowrap";
-
-  const focus =
-    "focus:outline-none focus-visible:ring-2 focus-visible:ring-black/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+    "inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-sm font-semibold transition select-none focus:outline-none focus:ring-2 focus:ring-black/15";
 
   const styles =
     variant === "primary"
-      ? // Primary: always readable on light site
-        "bg-neutral-900 text-white hover:bg-neutral-800 active:bg-neutral-900"
+      ? "bg-gradient-to-br from-indigo-600 via-sky-500 to-emerald-500 text-white hover:opacity-95 shadow-soft"
       : variant === "secondary"
-      ? // Secondary: white surface button
-        "bg-white text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50 active:bg-neutral-100"
-      : // Ghost: subtle outline
-        "bg-transparent text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50 active:bg-neutral-100";
+      ? "bg-white text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50"
+      : "bg-transparent text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50";
 
-  const cls = cx(base, focus, styles, className);
+  const safeLabel =
+    typeof children === "string" && children.trim().length === 0 ? "Open" : children;
 
-  // If someone accidentally passes empty children, show nothing but still stable
-  // (not throwing — just rendering as-is)
+  const cls = cx(base, styles, className);
+
   if (external) {
     return (
       <a href={href} target="_blank" rel="noreferrer" className={cls}>
-        {children}
+        {safeLabel}
       </a>
     );
   }
 
   return (
     <Link href={href} className={cls}>
-      {children}
+      {safeLabel}
     </Link>
   );
 }
