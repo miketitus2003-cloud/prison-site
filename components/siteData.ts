@@ -17,7 +17,7 @@ export const SITE = {
       {
         label: "National context",
         value: "High recidivism rates",
-        note: "BJS follow-up studies show many are rearrested after release.",
+        note: "BJS follow up studies show many are rearrested after release.",
       },
       {
         label: "Education link",
@@ -35,7 +35,7 @@ export const SITE = {
   research: {
     title: "Research brief",
     question:
-      "What is the relationship between post-release employment (proxy), offense type, time served, and recidivism?",
+      "What is the relationship between post release employment (proxy), offense type, time served, and recidivism?",
     methodBullets: [
       "Outcome: recidivism (1 = reoffended, 0 = did not)",
       "Predictors: employed (yes/no), offense type (violent vs drug), time served (years)",
@@ -80,10 +80,10 @@ export const SITE = {
     {
       title: "What solitary does to kids",
       oneLine:
-        "Solitary confinement can mean 22–24 hours alone per day. For youth, isolation can cause serious psychological harm and raises self-harm risk.",
+        "Solitary confinement can mean 22–24 hours alone per day. For youth, isolation can cause serious psychological harm and raises self harm risk.",
       bullets: [
         "Linked to anxiety, depression, panic, and paranoia",
-        "Higher risk of self-harm and suicide",
+        "Higher risk of self harm and suicide",
         "Long-term damage and trauma symptoms can persist after release",
         "Often used for staffing/rules rather than youth wellbeing",
       ],
@@ -94,7 +94,7 @@ export const SITE = {
     {
       title: "Why solitary should not be used",
       oneLine:
-        "Solitary may control a moment, but long-term isolation can make reentry harder and increase instability—hurting both rehabilitation and public safety.",
+        "Solitary may control a moment, but long term isolation can make reentry harder and increase instability hurting both rehabilitation and public safety.",
       bullets: [
         "Public safety: most people return home, and isolation can worsen stability",
         "Rehabilitation: practices that damage mental health fight the goal of reducing harm",

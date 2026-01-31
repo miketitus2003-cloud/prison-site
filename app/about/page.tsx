@@ -10,7 +10,7 @@ export default function AboutPage() {
 
         <div className="mt-5 max-w-3xl">
           <P className="text-base sm:text-lg">
-            I built this as a polished, public-facing version of my recidivism work — focused on clarity,
+            I built this as a polished, public-facing version of my recidivism work focused on clarity,
             structure, and verifiable sourcing.
           </P>
         </div>

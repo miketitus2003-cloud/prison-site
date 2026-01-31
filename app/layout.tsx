@@ -5,7 +5,7 @@ import SiteShell from "@/components/SiteShell";
 export const metadata: Metadata = {
   title: "Prison Education & Recidivism — Michael Parham",
   description:
-    "A research brief on recidivism and reentry support using post-release employment as a proxy, with related policy briefs and verified sources.",
+    "A research brief on recidivism and reentry support using post release employment as a proxy, with related policy briefs and verified sources.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

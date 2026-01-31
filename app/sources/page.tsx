@@ -78,7 +78,7 @@ export default function SourcesPage() {
             <Card>
               <H2>How I use sources</H2>
               <P className="mt-2">
-                Research framing prioritizes official statistics and meta-analyses. Policy writing uses
+                Research framing prioritizes official statistics and meta analyses. Policy writing uses
                 that foundation plus legal standards and documented reporting.
               </P>
             </Card>
