@@ -1,139 +1,133 @@
 // app/injustice/page.tsx
-import { Container, Kicker, H1, P, Surface, ButtonLink } from "@/components/ui";
-import { FACTS } from "@/data/facts";
+import { Container, Surface, Kicker, H1, H2, P, ButtonLink } from "@/components/ui";
 
 const TOPICS = [
   {
-    title: "Mass incarceration",
-    body:
-      "This section focuses on incentives, outcomes, and the long tail impact of criminal records on work, housing, and family stability.",
-    accent:
-      "radial-gradient(circle at 20% 20%, rgba(59,130,246,0.35), transparent 55%)",
+    title: "Mass incarceration and reentry barriers",
+    desc:
+      "Collateral consequences, employment barriers, and unstable housing can keep people stuck in a cycle after release.",
+    links: [
+      { label: "BJS Recidivism reporting (PDF)", href: "https://bjs.ojp.gov/sites/g/files/xyckuh236/files/media/document/rpr34s125yfup1217.pdf" },
+      { label: "BJS 9-year follow-up update", href: "https://bjs.ojp.gov/library/publications/2018-update-prisoner-recidivism-9-year-follow-period-2005-2014" },
+    ],
+    tone: "from-indigo-50 via-white to-sky-50",
   },
   {
-    title: "Solitary confinement",
-    body:
-      "Long isolation can damage mental health and make reentry harder. Youth isolation is especially high risk.",
-    accent:
-      "radial-gradient(circle at 20% 20%, rgba(168,85,247,0.35), transparent 55%)",
+    title: "Solitary confinement and harm",
+    desc:
+      "Solitary can intensify mental health symptoms and raise self-harm risk, especially for youth.",
+    links: [
+      { label: "Human Rights Watch", href: "https://www.hrw.org/" },
+      { label: "Policy references are listed on Sources", href: "/sources" },
+    ],
+    tone: "from-rose-50 via-white to-amber-50",
   },
   {
-    title: "Wrongful convictions",
-    body:
-      "The goal is verification and accountability. When the system is wrong, the cost is measured in years and lives.",
-    accent:
-      "radial-gradient(circle at 20% 20%, rgba(16,185,129,0.35), transparent 55%)",
+    title: "Wrongful convictions and exonerations",
+    desc:
+      "Verified registries and innocence organizations show how errors happen and why accuracy matters in high-stakes punishment.",
+    links: [
+      { label: "National Registry of Exonerations", href: "https://www.law.umich.edu/special/exoneration/Pages/about.aspx" },
+      { label: "Innocence Project", href: "https://innocenceproject.org/" },
+    ],
+    tone: "from-emerald-50 via-white to-sky-50",
   },
   {
     title: "Youth sentencing",
-    body:
-      "Youth are more vulnerable to pressure and have higher rehabilitation potential. Punishments that cannot be undone raise the stakes.",
-    accent:
-      "radial-gradient(circle at 20% 20%, rgba(245,158,11,0.30), transparent 55%)",
-  },
-  {
-    title: "Racial disparities and profiling",
-    body:
-      "This is about measurable disparities and documented patterns, not slogans. Evidence matters and so does lived impact.",
-    accent:
-      "radial-gradient(circle at 20% 20%, rgba(239,68,68,0.28), transparent 55%)",
-  },
-  {
-    title: "Reentry barriers",
-    body:
-      "Employment, housing, treatment access, and supervision conditions shape outcomes after release.",
-    accent:
-      "radial-gradient(circle at 20% 20%, rgba(14,165,233,0.30), transparent 55%)",
+    desc:
+      "Youth are more vulnerable to pressure and error. Supreme Court limits reflect developmental differences.",
+    links: [
+      { label: "Roper v. Simmons (2005)", href: "https://supreme.justia.com/cases/federal/us/543/551/" },
+      { label: "Death Penalty Information Center", href: "https://deathpenaltyinfo.org/" },
+    ],
+    tone: "from-sky-50 via-white to-indigo-50",
   },
 ];
 
-export default function InjusticePage() {
+export default function TopicsPage() {
   return (
-    <div className="relative">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.18]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(0,0,0,0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.07) 1px, transparent 1px)",
-          backgroundSize: "54px 54px",
-        }}
-      />
-      <Container>
-        <div className="pt-12 md:pt-16 pb-12">
-          <Kicker>Topics</Kicker>
-          <H1>Where injustice shows up</H1>
+    <Container>
+      <div className="pt-12 md:pt-16 pb-12">
+        <Kicker>Topics</Kicker>
+        <H1>Issues this project connects to</H1>
 
-          <div className="mt-4 max-w-3xl">
-            <P className="text-black/70">
-              This site is not making excuses for harm. It is focused on outcomes, evidence, and the places where systems fail people who cannot afford mistakes.
-            </P>
-          </div>
+        <div className="mt-4 max-w-3xl">
+          <P>
+            This site is not advocating for crime. It focuses on documented injustice, system failure, and the people whose experiences are ignored.
+            Research and stats live in Research and Stats Lab. Sources are centralized on Sources.
+          </P>
+        </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <ButtonLink href="/stats" variant="primary">
-              Stats Lab
-            </ButtonLink>
-            <ButtonLink href="/sources" variant="secondary">
-              Sources
-            </ButtonLink>
-            <ButtonLink href="/policy" variant="ghost">
-              Policy briefs
-            </ButtonLink>
-          </div>
-
-          <div className="mt-10 grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="mt-10 grid lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 space-y-6">
             {TOPICS.map((t) => (
-              <div
-                key={t.title}
-                className="rounded-3xl border border-black/10 bg-white/70 backdrop-blur p-6 shadow-[0_18px_55px_rgba(0,0,0,0.08)] relative overflow-hidden"
-              >
-                <div className="absolute inset-0" style={{ background: t.accent }} />
-                <div className="relative">
-                  <div className="text-lg font-semibold text-black/90">
-                    {t.title}
-                  </div>
-                  <div className="mt-3 text-sm text-black/65 leading-relaxed">
-                    {t.body}
-                  </div>
-
-                  <div className="mt-5 text-xs text-black/55">
-                    Sources live on the Sources page.
-                  </div>
+              <Surface key={t.title} className={`bg-gradient-to-br ${t.tone}`}>
+                <H2>{t.title}</H2>
+                <div className="mt-2">
+                  <P>{t.desc}</P>
                 </div>
-              </div>
+
+                <div className="mt-5 grid sm:grid-cols-2 gap-3">
+                  {t.links.map((l) => {
+                    const external = l.href.startsWith("http");
+                    return external ? (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block rounded-2xl bg-white ring-1 ring-black/10 p-4 hover:bg-neutral-50 transition"
+                      >
+                        <div className="text-sm font-semibold text-black">{l.label}</div>
+                        <div className="mt-1 text-xs text-black/55 break-all">{l.href}</div>
+                      </a>
+                    ) : (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        className="block rounded-2xl bg-white ring-1 ring-black/10 p-4 hover:bg-neutral-50 transition"
+                      >
+                        <div className="text-sm font-semibold text-black">{l.label}</div>
+                        <div className="mt-1 text-xs text-black/55 break-all">{l.href}</div>
+                      </a>
+                    );
+                  })}
+                </div>
+              </Surface>
             ))}
           </div>
 
-          <div className="mt-12 rounded-3xl border border-black/10 bg-white/70 backdrop-blur p-6 shadow-[0_18px_55px_rgba(0,0,0,0.08)]">
-            <div className="text-sm font-semibold text-black/85">
-              References for this topic hub
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {FACTS.references.primaryLinks.slice(0, 3).map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full px-3 py-1.5 text-xs font-semibold bg-black/5 border border-black/10 text-black/70 hover:bg-black/10 transition"
-                >
-                  {l.label}
-                </a>
-              ))}
-              {FACTS.references.policyAndJustice.slice(0, 3).map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full px-3 py-1.5 text-xs font-semibold bg-black/5 border border-black/10 text-black/70 hover:bg-black/10 transition"
-                >
-                  {l.label}
-                </a>
-              ))}
-            </div>
+          <div className="lg:col-span-4 space-y-6">
+            <Surface>
+              <H2>Fast navigation</H2>
+              <div className="mt-4 flex flex-col gap-3">
+                <ButtonLink href="/stats" variant="primary">
+                  Open Stats Lab
+                </ButtonLink>
+                <ButtonLink href="/research" variant="secondary">
+                  Research brief
+                </ButtonLink>
+                <ButtonLink href="/policy" variant="ghost">
+                  Policy briefs
+                </ButtonLink>
+                <ButtonLink href="/sources" variant="ghost">
+                  Sources
+                </ButtonLink>
+              </div>
+            </Surface>
+
+            <Surface className="bg-neutral-900 text-white">
+              <div className="text-xs uppercase tracking-widest text-white/60">Promise</div>
+              <div className="mt-2 text-lg font-semibold text-white">
+                Evidence first.
+              </div>
+              <div className="mt-2 text-sm text-white/75 leading-relaxed">
+                Claims on this site are tied to citations. If a point needs proof, it goes on the Sources page.
+              </div>
+            </Surface>
           </div>
         </div>
-      </Container>
-    </div>
+      </div>
+    </Container>
   );
 }
