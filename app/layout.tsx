@@ -1,4 +1,5 @@
 import "./globals.css";
+import ResearchBot from "@/components/ResearchBot";
 import type { Metadata } from "next";
 import SiteShell from "@/components/SiteShell";
 
