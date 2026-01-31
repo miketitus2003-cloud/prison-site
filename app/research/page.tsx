@@ -1,4 +1,15 @@
-import { Container, Card, Kicker, H1, H2, P, Bullets, Divider, ButtonLink } from "@/components/ui";
+// app/research/page.tsx
+import {
+  Container,
+  Card,
+  Kicker,
+  H1,
+  H2,
+  P,
+  Bullets,
+  Divider,
+  ButtonLink,
+} from "@/components/ui";
 import { SITE } from "@/components/siteData";
 import SlideGallery from "@/components/SlideGallery";
 
@@ -9,13 +20,15 @@ export default function ResearchPage() {
         <Kicker>Research</Kicker>
         <H1>{SITE.research.title}</H1>
 
-       <div className="mt-10">
-  <SlideGallery
-    slides={SLIDES}
-    title="Slide walkthrough"
-    subtitle="Scroll through the story. Each panel is a full widescreen slide, presented like a research narrative."
-  />
-</div>
+        {/* Cinematic, widescreen scroll walkthrough (single source of truth) */}
+        <div className="mt-8">
+          <SlideGallery
+            slides={SITE.research.slides}
+            title="Slide walkthrough"
+            subtitle="A scroll-first walkthrough of the deck highlights—full widescreen panels, one-by-one."
+          />
+        </div>
+
         <div className="mt-10 grid lg:grid-cols-12 gap-6">
           <div className="lg:col-span-7 space-y-6">
             <Card>
@@ -47,15 +60,13 @@ export default function ResearchPage() {
             <Card>
               <H2>Interpretation</H2>
               <P>
-                The model results are presented as <span className="font-medium text-[rgb(var(--fg))]">directional evidence</span>.
-                Stronger versions of this work would use administrative program participation data and additional controls.
+                The model results are presented as{" "}
+                <span className="font-medium">directional evidence</span>. Stronger
+                versions of this work would use administrative program participation
+                data and additional controls.
               </P>
             </Card>
           </div>
-        </div>
-
-        <div className="mt-8">
-          <SlideGallery slides={SITE.research.slides} />
         </div>
       </div>
     </Container>
