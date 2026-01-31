@@ -1,3 +1,4 @@
+// components/ui.tsx
 import React from "react";
 import Link from "next/link";
 
@@ -5,12 +6,10 @@ function cx(...classes: Array<string | false | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+/* Layout wrappers */
+
 export function Container({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-      {children}
-    </div>
-  );
+  return <div className="max-w-6xl mx-auto px-4">{children}</div>;
 }
 
 export function Surface({
@@ -23,7 +22,7 @@ export function Surface({
   return (
     <div
       className={cx(
-        "rounded-3xl bg-white border border-[rgb(var(--line))] shadow-[0_10px_30px_-20px_rgba(var(--shadow),0.35)]",
+        "rounded-3xl border border-black/10 bg-white/70 backdrop-blur p-6 shadow-[0_18px_55px_rgba(0,0,0,0.08)]",
         className
       )}
     >
@@ -32,23 +31,11 @@ export function Surface({
   );
 }
 
-export function Card({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <Surface className={cx("p-6 sm:p-8", className)}>
-      {children}
-    </Surface>
-  );
-}
+/* Typography */
 
 export function Kicker({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-xs uppercase tracking-[0.18em] text-[rgb(var(--muted))]">
+    <div className="text-xs uppercase tracking-widest text-black/50">
       {children}
     </div>
   );
@@ -56,7 +43,7 @@ export function Kicker({ children }: { children: React.ReactNode }) {
 
 export function H1({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-semibold text-[rgb(var(--fg))]">
+    <h1 className="mt-2 text-3xl md:text-5xl font-semibold tracking-tight text-black/90">
       {children}
     </h1>
   );
@@ -64,7 +51,7 @@ export function H1({ children }: { children: React.ReactNode }) {
 
 export function H2({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-lg sm:text-xl font-semibold text-[rgb(var(--fg))]">
+    <h2 className="text-lg md:text-xl font-semibold text-black/85">
       {children}
     </h2>
   );
@@ -77,20 +64,18 @@ export function P({
   children: React.ReactNode;
   className?: string;
 }) {
-  return (
-    <p className={cx("text-[rgb(var(--muted))] leading-relaxed", className)}>
-      {children}
-    </p>
-  );
+  return <p className={cx("text-black/65 leading-relaxed", className)}>{children}</p>;
 }
+
+/* Lists, dividers, buttons */
 
 export function Bullets({ items }: { items: string[] }) {
   return (
-    <ul className="mt-4 space-y-2.5 text-sm text-[rgb(var(--muted))]">
+    <ul className="mt-4 space-y-2 text-sm text-black/65 leading-relaxed">
       {items.map((b) => (
         <li key={b} className="flex gap-3">
-          <span className="mt-[0.55rem] h-1.5 w-1.5 rounded-full bg-[rgb(var(--accent))]" />
-          <span className="leading-relaxed">{b}</span>
+          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-black/40" />
+          <span>{b}</span>
         </li>
       ))}
     </ul>
@@ -98,15 +83,7 @@ export function Bullets({ items }: { items: string[] }) {
 }
 
 export function Divider() {
-  return <div className="my-6 h-px bg-[rgb(var(--line))]" />;
-}
-
-export function Badge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-[rgb(var(--line))] bg-white px-3 py-1 text-xs text-[rgb(var(--muted))]">
-      {children}
-    </span>
-  );
+  return <div className="my-6 h-px bg-black/10" />;
 }
 
 export function ButtonLink({
@@ -122,29 +99,58 @@ export function ButtonLink({
 }) {
   const base =
     "inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-sm font-semibold transition active:scale-[0.99]";
+
   const styles =
     variant === "primary"
-      ? "bg-[rgb(var(--fg))] text-white hover:opacity-90"
+      ? "text-white shadow-[0_16px_40px_rgba(0,0,0,0.14)] hover:opacity-95"
       : variant === "secondary"
-      ? "bg-white text-[rgb(var(--fg))] border border-[rgb(var(--line))] hover:bg-neutral-50"
-      : "bg-transparent text-[rgb(var(--fg))] hover:bg-neutral-50";
+      ? "bg-white/60 border border-black/10 text-black/80 hover:bg-white/85"
+      : "bg-black/5 border border-black/10 text-black/75 hover:bg-black/10";
+
+  const primaryStyle =
+    "bg-gradient-to-br from-black via-black to-black";
+
+  const className = cx(
+    base,
+    styles,
+    variant === "primary" ? primaryStyle : undefined
+  );
 
   if (external) {
     return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        className={cx(base, styles)}
-      >
+      <a href={href} target="_blank" rel="noreferrer" className={className}>
         {children}
       </a>
     );
   }
 
   return (
-    <Link href={href} className={cx(base, styles)}>
+    <Link href={href} className={className}>
       {children}
     </Link>
   );
 }
+
+/* Backwards compatible exports */
+
+export const Card = Surface;
+
+export function SectionHeader({
+  eyebrow,
+  title,
+  subtitle,
+}: {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <div className="max-w-3xl">
+      {eyebrow ? <Kicker>{eyebrow}</Kicker> : null}
+      <H1>{title}</H1>
+      {subtitle ? <P className="mt-4">{subtitle}</P> : null}
+    </div>
+  );
+}
+
+export const BulletList = Bullets;
