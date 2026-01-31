@@ -270,47 +270,77 @@ export default function ResearchBot() {
   }
 
   function makeStatsSexRace() {
-    const b12 = grounded.stats.bjs2012;
+  const b12 = grounded.stats.bjs2012;
 
-    const male = b12.sex5yr?.male;
-    const female = b12.sex5yr?.female;
+  // supports either:
+  // 1) array form: [{ label: "Male", pct: 71.7 }, { label: "Female", pct: 63.1 }]
+  // 2) object form: { male: 71.7, female: 63.1 }
+  const getPct = (
+    v:
+      | { label: string; pct: number }[]
+      | { [k: string]: number }
+      | undefined,
+    keyOrLabel: string
+  ) => {
+    if (!v) return undefined;
 
-    const white = b12.race5yr?.white;
-    const black = b12.race5yr?.black;
-    const hispanic = b12.race5yr?.hispanic;
-
-    const out: string[] = [];
-    out.push("Breakdowns from the BJS 2012 cohort (Year 5):");
-    out.push("");
-
-    if (typeof male === "number" && typeof female === "number") {
-      out.push(`• Sex: male ${formatPct(male)} vs female ${formatPct(female)} (cumulative arrest).`);
-    } else {
-      out.push("• Sex: see Stats Lab for the breakdown chart.");
-    }
-
-    if (
-      typeof white === "number" &&
-      typeof black === "number" &&
-      typeof hispanic === "number"
-    ) {
-      out.push(
-        `• Race/ethnicity: White ${formatPct(white)}, Black ${formatPct(black)}, Hispanic ${formatPct(
-          hispanic
-        )} (cumulative arrest).`
+    if (Array.isArray(v)) {
+      const hit = v.find(
+        (x) => x.label.toLowerCase() === keyOrLabel.toLowerCase()
       );
-    } else {
-      out.push("• Race/ethnicity: see Stats Lab for the breakdown chart.");
+      return hit?.pct;
     }
 
-    out.push("");
-    out.push("Verify:");
-    out.push(`• BJS 2012 PDF: ${sources.bjs2012pdf}`);
-    out.push(`• Stats Lab: ${sources.statsPage}`);
+    // object
+    const k = keyOrLabel.toLowerCase();
+    // allow "male" or "Male"
+    return (v as any)[k] ?? (v as any)[keyOrLabel];
+  };
 
-    return out.join("\n");
+  const male = getPct(b12.sex5yr as any, "Male") ?? getPct(b12.sex5yr as any, "male");
+  const female = getPct(b12.sex5yr as any, "Female") ?? getPct(b12.sex5yr as any, "female");
+
+  const white =
+    getPct(b12.race5yr as any, "White") ?? getPct(b12.race5yr as any, "white");
+  const black =
+    getPct(b12.race5yr as any, "Black") ?? getPct(b12.race5yr as any, "black");
+  const hispanic =
+    getPct(b12.race5yr as any, "Hispanic") ??
+    getPct(b12.race5yr as any, "hispanic");
+
+  const out: string[] = [];
+  out.push("Breakdowns from the BJS 2012 cohort (Year 5):");
+  out.push("");
+
+  if (typeof male === "number" && typeof female === "number") {
+    out.push(
+      `• Sex: male ${formatPct(male)} vs female ${formatPct(female)} (cumulative arrest).`
+    );
+  } else {
+    out.push("• Sex: see Stats Lab for the breakdown chart.");
   }
 
+  if (
+    typeof white === "number" &&
+    typeof black === "number" &&
+    typeof hispanic === "number"
+  ) {
+    out.push(
+      `• Race/ethnicity: White ${formatPct(white)}, Black ${formatPct(
+        black
+      )}, Hispanic ${formatPct(hispanic)} (cumulative arrest).`
+    );
+  } else {
+    out.push("• Race/ethnicity: see Stats Lab for the breakdown chart.");
+  }
+
+  out.push("");
+  out.push("Verify:");
+  out.push(`• BJS 2012 PDF: ${sources.bjs2012pdf}`);
+  out.push(`• Stats Lab: ${sources.statsPage}`);
+
+  return out.join("\n");
+}
   function makeOffenseMix() {
     const o = grounded.stats.bjs2012.offense;
     if (!o) return "Offense distribution is not available in the current stats dataset.";
