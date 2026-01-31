@@ -1,174 +1,124 @@
 // app/stats/page.tsx
-import Link from "next/link";
-import { Container, Kicker, H1, P, Surface, ButtonLink } from "@/components/ui";
-import MiniBarChart from "@/components/MiniBarChart";
-import { FACTS } from "@/data/facts";
+import { Container, Kicker, H1, P } from "@/components/ui";
+import { BJS2012, BJS2018 } from "@/components/statsData";
+import { BarChart, DonutChart, LineChart, StatCard } from "@/components/StatsCharts";
 
-function SourcePill({ label, href }: { label: string; href: string }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold bg-black/5 hover:bg-black/10 border border-black/10 text-black/70 transition"
-    >
-      <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
-      {label}
-    </a>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  context,
-  sourceLabel,
-  sourceHref,
-}: {
-  label: string;
-  value: string;
-  context: string;
-  sourceLabel: string;
-  sourceHref: string;
-}) {
-  return (
-    <div className="rounded-3xl border border-black/10 bg-white/70 backdrop-blur p-6 shadow-[0_18px_55px_rgba(0,0,0,0.08)]">
-      <div className="text-xs uppercase tracking-widest text-black/50">
-        {label}
-      </div>
-      <div className="mt-2 text-3xl md:text-4xl font-semibold text-black/90">
-        {value}
-      </div>
-      <div className="mt-3 text-sm text-black/65 leading-relaxed">
-        {context}
-      </div>
-      <div className="mt-4">
-        <SourcePill label={sourceLabel} href={sourceHref} />
-      </div>
-    </div>
-  );
+function pctShare(count: number, total: number) {
+  return (count / total) * 100;
 }
 
 export default function StatsPage() {
-  const chart = FACTS.demoCharts.recidivismConcept;
+  const priors = BJS2012.priorArrestsCounts.map((d) => ({
+    label: d.label,
+    value: pctShare(d.count, BJS2012.totalReleased),
+  }));
+
+  const ages = BJS2012.ageFirstArrestCounts.map((d) => ({
+    label: d.label,
+    value: pctShare(d.count, BJS2012.totalReleased),
+  }));
 
   return (
-    <div className="relative">
-      {/* Background art */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 -right-28 h-[520px] w-[520px] rounded-full blur-3xl opacity-40"
-          style={{ background: "radial-gradient(circle at 30% 30%, rgba(59,130,246,0.55), rgba(16,185,129,0.20), transparent 60%)" }}
-        />
-        <div className="absolute -bottom-28 -left-28 h-[560px] w-[560px] rounded-full blur-3xl opacity-35"
-          style={{ background: "radial-gradient(circle at 30% 30%, rgba(168,85,247,0.45), rgba(59,130,246,0.15), transparent 60%)" }}
-        />
-        <div className="absolute inset-0 opacity-[0.25]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px)",
-            backgroundSize: "44px 44px",
-          }}
-        />
-      </div>
+    <Container>
+      <div className="pt-12 sm:pt-16 pb-12">
+        <Kicker>Stats</Kicker>
+        <H1>Recidivism patterns in the BJS data</H1>
 
-      <Container>
-        <div className="pt-12 md:pt-16 pb-12 relative">
-          <Kicker>Stats Lab</Kicker>
-          <H1>Numbers you can verify</H1>
+        <div className="mt-4 max-w-3xl">
+          <P>
+            These visuals are pulled from Bureau of Justice Statistics recidivism reporting.
+            The goal is to make the patterns readable fast, with sources linked at the bottom.
+          </P>
+        </div>
 
-          <div className="mt-4 max-w-3xl">
-            <P className="text-black/70">
-              This page centralizes core metrics and links. Every stat includes a source so readers can verify context.
-            </P>
-          </div>
+        <div className="mt-8 grid md:grid-cols-3 gap-4">
+          <StatCard
+            label="Cumulative arrest at 5 years"
+            value="70.8%"
+            note="34 states, prisoners released in 2012 (any arrest, any offense)."
+          />
+          <StatCard
+            label="Arrested within 3 years"
+            value="68%"
+            note="2005 release cohort tracked for 9 years."
+          />
+          <StatCard
+            label="Arrested within 9 years"
+            value="83%"
+            note="Shows why longer follow-up changes the picture."
+          />
+        </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <ButtonLink href="/research" variant="primary">
-              Research brief
-            </ButtonLink>
-            <ButtonLink href="/policy" variant="secondary">
-              Policy briefs
-            </ButtonLink>
-            <ButtonLink href="/sources" variant="ghost">
-              Sources
-            </ButtonLink>
-          </div>
+        <div className="mt-8">
+          <LineChart
+            data={BJS2012.cumulativeArrestOverTime.map((d) => ({
+              x: `Year ${d.year}`,
+              y: d.pct,
+            }))}
+          />
+        </div>
 
-          <div className="mt-10 grid lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 space-y-6">
-              <div className="rounded-3xl border border-black/10 bg-white/70 backdrop-blur p-6 shadow-[0_18px_55px_rgba(0,0,0,0.08)]">
-                <div className="text-sm font-semibold text-black/85">
-                  {chart.title}
-                </div>
-                <div className="mt-2 text-sm text-black/60 leading-relaxed">
-                  {chart.subtitle}
-                </div>
+        <div className="mt-8 grid lg:grid-cols-2 gap-6">
+          <BarChart
+            title="Cumulative arrest at 5 years by sex"
+            subtitle="Any arrest, any offense (34 states, 2012 release cohort)"
+            data={BJS2012.cumulativeArrest5yrBySex.map((d) => ({
+              label: d.label,
+              value: d.pct,
+            }))}
+            mode="pct"
+          />
 
-                <div className="mt-5">
-                  <MiniBarChart points={chart.points} />
-                </div>
+          <BarChart
+            title="Cumulative arrest at 5 years by race/ethnicity"
+            subtitle="Any arrest, any offense (34 states, 2012 release cohort)"
+            data={BJS2012.cumulativeArrest5yrByRace.map((d) => ({
+              label: d.label,
+              value: d.pct,
+            }))}
+            mode="pct"
+          />
+        </div>
 
-                <div className="mt-4 flex flex-wrap items-center gap-3">
-                  <div className="text-xs text-black/55">
-                    Source framing
-                  </div>
-                  <SourcePill label={chart.sourceLabel} href={chart.sourceHref} />
-                </div>
-              </div>
+        <div className="mt-8 grid lg:grid-cols-2 gap-6">
+          <BarChart
+            title="Prior arrest intensity"
+            subtitle="Share of released prisoners by number of prior arrests (computed from BJS table counts)"
+            data={priors.map((d) => ({ label: d.label, value: d.value }))}
+            mode="pct"
+          />
 
-              <div className="rounded-3xl border border-black/10 bg-white/70 backdrop-blur p-6 shadow-[0_18px_55px_rgba(0,0,0,0.08)]">
-                <div className="text-sm font-semibold text-black/85">
-                  Why this exists
-                </div>
-                <div className="mt-3 text-sm text-black/65 leading-relaxed">
-                  {FACTS.disclaimers.intent}
-                </div>
-                <div className="mt-3 text-sm text-black/65 leading-relaxed">
-                  {FACTS.disclaimers.caution}
-                </div>
-              </div>
-            </div>
+          <BarChart
+            title="Age at first arrest"
+            subtitle="Share of released prisoners by age of first arrest (computed from BJS table counts)"
+            data={ages.map((d) => ({ label: d.label, value: d.value }))}
+            mode="pct"
+          />
+        </div>
 
-            <div className="lg:col-span-5 grid gap-6">
-              {FACTS.quickStats.map((s) => (
-                <StatCard
-                  key={s.id}
-                  label={s.label}
-                  value={s.value}
-                  context={s.context}
-                  sourceLabel={s.sourceLabel}
-                  sourceHref={s.sourceHref}
-                />
-              ))}
-            </div>
-          </div>
+        <div className="mt-8">
+          <DonutChart
+            title="Most serious commitment offense"
+            subtitle="Distribution of releases by offense category (34 states, 2012 release cohort)"
+            data={BJS2012.commitmentOffensePct}
+          />
+        </div>
 
-          <div className="mt-12 rounded-3xl border border-black/10 bg-white/70 backdrop-blur p-6 shadow-[0_18px_55px_rgba(0,0,0,0.08)]">
-            <div className="text-sm font-semibold text-black/85">
-              Want more stats
-            </div>
-            <div className="mt-2 text-sm text-black/65 leading-relaxed max-w-3xl">
-              Next upgrade is replacing the concept chart with real outputs and adding breakdowns by offense type, time served, and employment status.
-              The AI assistant can pull from this page because the values are stored in one place.
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                href="/injustice"
-                className="rounded-2xl px-4 py-2.5 text-sm font-semibold bg-black text-white hover:opacity-90 transition"
-              >
-                Explore injustice topics
-              </Link>
-              <Link
-                href="/stack"
-                className="rounded-2xl px-4 py-2.5 text-sm font-semibold bg-black/5 border border-black/10 text-black/80 hover:bg-black/10 transition"
-              >
-                How this site was built
-              </Link>
-            </div>
+        <div className="mt-10 rounded-3xl bg-neutral-50 ring-1 ring-black/10 p-6">
+          <div className="text-sm font-semibold text-black">Sources</div>
+          <div className="mt-2 text-sm text-black/70 leading-relaxed">
+            BJS (2017) Recidivism of Prisoners Released in 34 States in 2012 (PDF):{" "}
+            <a className="underline" href="https://bjs.ojp.gov/sites/g/files/xyckuh236/files/media/document/rpr34s125yfup1217.pdf" target="_blank" rel="noreferrer">
+              rpr34s125yfup1217.pdf
+            </a>
+            <br />
+            BJS (2018) 9-year follow-up update page:{" "}
+            <a className="underline" href="https://bjs.ojp.gov/library/publications/2018-update-prisoner-recidivism-9-year-follow-period-2005-2014" target="_blank" rel="noreferrer">
+              2018 update on prisoner recidivism
+            </a>
           </div>
         </div>
-      </Container>
-    </div>
+      </div>
+    </Container>
   );
 }

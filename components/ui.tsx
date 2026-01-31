@@ -12,6 +12,7 @@ export function Container({ children }: { children: React.ReactNode }) {
   return <div className="max-w-6xl mx-auto px-4">{children}</div>;
 }
 
+// Light-theme surface by default (works on white backgrounds)
 export function Surface({
   children,
   className,
@@ -22,7 +23,7 @@ export function Surface({
   return (
     <div
       className={cx(
-        "rounded-3xl border border-black/10 bg-white/70 backdrop-blur p-6 shadow-[0_18px_55px_rgba(0,0,0,0.08)]",
+        "rounded-3xl bg-white ring-1 ring-black/10 shadow-[0_16px_60px_rgba(0,0,0,0.06)] p-6",
         className
       )}
     >
@@ -43,18 +44,14 @@ export function Kicker({ children }: { children: React.ReactNode }) {
 
 export function H1({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="mt-2 text-3xl md:text-5xl font-semibold tracking-tight text-black/90">
+    <h1 className="mt-2 text-3xl md:text-5xl font-semibold tracking-tight text-black">
       {children}
     </h1>
   );
 }
 
 export function H2({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="text-lg md:text-xl font-semibold text-black/85">
-      {children}
-    </h2>
-  );
+  return <h2 className="text-lg md:text-xl font-semibold text-black">{children}</h2>;
 }
 
 export function P({
@@ -64,17 +61,17 @@ export function P({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <p className={cx("text-black/65 leading-relaxed", className)}>{children}</p>;
+  return <p className={cx("text-black/70 leading-relaxed", className)}>{children}</p>;
 }
 
 /* Lists, dividers, buttons */
 
 export function Bullets({ items }: { items: string[] }) {
   return (
-    <ul className="mt-4 space-y-2 text-sm text-black/65 leading-relaxed">
+    <ul className="mt-4 space-y-2 text-sm text-black/70 leading-relaxed">
       {items.map((b) => (
         <li key={b} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-black/40" />
+          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-black/45" />
           <span>{b}</span>
         </li>
       ))}
@@ -86,46 +83,46 @@ export function Divider() {
   return <div className="my-6 h-px bg-black/10" />;
 }
 
+/**
+ * IMPORTANT FIX:
+ * The old styling could produce a dark pill with dark text (looks blank).
+ * These variants guarantee readable text on a white site.
+ */
 export function ButtonLink({
   href,
   children,
   variant = "primary",
   external = false,
+  className,
 }: {
   href: string;
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "ghost";
   external?: boolean;
+  className?: string;
 }) {
   const base =
-    "inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-sm font-semibold transition active:scale-[0.99]";
+    "inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-sm font-semibold transition select-none";
 
   const styles =
     variant === "primary"
-      ? "text-white shadow-[0_16px_40px_rgba(0,0,0,0.14)] hover:opacity-95"
+      ? "bg-neutral-900 text-white hover:bg-neutral-800"
       : variant === "secondary"
-      ? "bg-white/60 border border-black/10 text-black/80 hover:bg-white/85"
-      : "bg-black/5 border border-black/10 text-black/75 hover:bg-black/10";
+      ? "bg-white text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50"
+      : "bg-transparent text-neutral-900 ring-1 ring-black/10 hover:bg-neutral-50";
 
-  const primaryStyle =
-    "bg-gradient-to-br from-black via-black to-black";
-
-  const className = cx(
-    base,
-    styles,
-    variant === "primary" ? primaryStyle : undefined
-  );
+  const cls = cx(base, styles, className);
 
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noreferrer" className={className}>
+      <a href={href} target="_blank" rel="noreferrer" className={cls}>
         {children}
       </a>
     );
   }
 
   return (
-    <Link href={href} className={className}>
+    <Link href={href} className={cls}>
       {children}
     </Link>
   );

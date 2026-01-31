@@ -1,8 +1,13 @@
 // components/SlideGallery.tsx
-import Image from "next/image";
-import React from "react";
+"use client";
 
-type Slide = { src: string; caption: string };
+import React, { useEffect, useMemo, useRef, useState } from "react";
+
+export type Slide = { src: string; caption: string };
+
+function cx(...c: Array<string | false | undefined>) {
+  return c.filter(Boolean).join(" ");
+}
 
 export default function SlideGallery({
   slides,
@@ -13,76 +18,136 @@ export default function SlideGallery({
   title?: string;
   subtitle?: string;
 }) {
+  const ids = useMemo(() => slides.map((_, i) => `slide-${i}`), [slides]);
+  const [active, setActive] = useState(0);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const root = wrapRef.current;
+    if (!root) return;
+
+    const els = ids
+      .map((id) => root.querySelector<HTMLDivElement>(`#${id}`))
+      .filter(Boolean) as HTMLDivElement[];
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        // pick the most visible entry
+        const vis = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
+        if (!vis) return;
+        const idx = els.indexOf(vis.target as HTMLDivElement);
+        if (idx >= 0) setActive(idx);
+      },
+      { root: null, threshold: [0.25, 0.4, 0.55, 0.7] }
+    );
+
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [ids]);
+
   return (
-    <section className="w-full">
-      {(title || subtitle) && (
-        <div className="mb-5">
+    <div ref={wrapRef} className="relative">
+      {/* Header */}
+      {title || subtitle ? (
+        <div className="mb-4">
           {title ? (
-            <h2 className="text-xl md:text-2xl font-semibold text-black">
-              {title}
-            </h2>
+            <div className="text-lg md:text-xl font-semibold text-black">{title}</div>
           ) : null}
           {subtitle ? (
-            <p className="mt-2 text-black/70 leading-relaxed max-w-3xl">
-              {subtitle}
-            </p>
+            <div className="mt-1 text-sm text-black/65 max-w-3xl">{subtitle}</div>
           ) : null}
         </div>
-      )}
+      ) : null}
 
-      {/* Story scroller */}
-      <div
-        className="
-          rounded-3xl border border-black/10 bg-white shadow-sm
-          overflow-hidden
-        "
-      >
-        <div
-          className="
-            max-h-[78vh] overflow-y-auto
-            scroll-smooth
-            [scrollbar-gutter:stable]
-            snap-y snap-mandatory
-          "
-        >
-          {slides.map((s) => (
+      {/* Progress / mini nav */}
+      <div className="sticky top-[72px] z-20 mb-4">
+        <div className="rounded-2xl bg-white/85 backdrop-blur ring-1 ring-black/10 shadow-[0_16px_60px_rgba(0,0,0,0.06)] px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="text-xs uppercase tracking-widest text-black/45">
+              Slide {active + 1} of {slides.length}
+            </div>
+
+            <div className="ml-auto flex items-center gap-1">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    document.getElementById(`slide-${i}`)?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                  aria-label={`Go to slide ${i + 1}`}
+                  className={cx(
+                    "h-2.5 w-2.5 rounded-full transition",
+                    i === active ? "bg-neutral-900" : "bg-black/15 hover:bg-black/25"
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Thin progress bar */}
+          <div className="mt-2 h-1.5 rounded-full bg-black/10 overflow-hidden">
             <div
-              key={s.src}
-              className="
-                snap-start
-                px-4 sm:px-6 md:px-8
-                py-8 md:py-10
-                border-b border-black/10
-                bg-white
-              "
-            >
-              {/* 16:9 panel */}
-              <div className="relative w-full aspect-[16/9] overflow-hidden rounded-2xl border border-black/10 bg-black/[0.02]">
-                <Image
+              className="h-full rounded-full bg-neutral-900 transition-all"
+              style={{ width: `${((active + 1) / slides.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Slides: full widescreen panels */}
+      <div className="space-y-6">
+        {slides.map((s, i) => (
+          <div
+            key={s.src + i}
+            id={`slide-${i}`}
+            className="scroll-mt-[120px]"
+          >
+            <div className="rounded-[28px] overflow-hidden ring-1 ring-black/10 bg-white shadow-[0_18px_70px_rgba(0,0,0,0.08)]">
+              {/* Widescreen image area */}
+              <div className="relative bg-neutral-900">
+                <img
                   src={s.src}
                   alt={s.caption}
-                  fill
-                  className="object-contain"
-                  sizes="(min-width: 1024px) 900px, 100vw"
-                  priority={false}
+                  className="w-full aspect-video object-contain bg-neutral-900"
+                  loading="lazy"
                 />
+
+                {/* Caption overlay */}
+                <div className="absolute left-0 right-0 bottom-0 p-4">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/90 backdrop-blur px-3 py-1.5 ring-1 ring-black/10">
+                    <span className="text-xs font-semibold text-neutral-900">
+                      {s.caption}
+                    </span>
+                    <span className="text-[11px] text-black/45">
+                      {i + 1}/{slides.length}
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              {/* Caption */}
-              <div className="mt-4 flex items-center justify-between gap-4">
-                <div className="text-sm text-black/80">{s.caption}</div>
-                <div className="text-xs text-black/40">
-                  {slides.indexOf(s) + 1} / {slides.length}
+              {/* Under-card info */}
+              <div className="p-4 md:p-5">
+                <div className="text-sm text-black/70 leading-relaxed">
+                  {s.caption}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
-      <div className="mt-3 text-xs text-black/40">
-        Tip: scroll inside the panel, it snaps one slide at a time.
+      {/* Ending CTA */}
+      <div className="mt-6 rounded-3xl bg-gradient-to-br from-indigo-50 via-white to-sky-50 ring-1 ring-black/10 p-6">
+        <div className="text-sm font-semibold text-black">Tip</div>
+        <div className="mt-1 text-sm text-black/70">
+          Use the dots to jump between slides. The panels are sized as widescreen so the full slide stays readable.
+        </div>
       </div>
-    </section>
+    </div>
   );
 }
