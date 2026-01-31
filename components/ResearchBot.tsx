@@ -18,27 +18,57 @@ function clampText(s: string, max = 260) {
   return t.slice(0, max - 1).trimEnd() + "…";
 }
 
-function isEmpty(v: unknown) {
-  return typeof v !== "string" || v.trim().length === 0;
-}
-
-function formatPct(v: number) {
-  // keep one decimal if needed
-  const s = String(v);
-  if (s.includes(".")) return `${v.toFixed(1)}%`;
-  return `${v}%`;
+function formatPct(v: number, digits = 1) {
+  if (!Number.isFinite(v)) return "";
+  const rounded = Math.round(v * Math.pow(10, digits)) / Math.pow(10, digits);
+  // remove trailing .0
+  const asStr = String(rounded);
+  return asStr.includes(".") ? `${rounded.toFixed(digits)}%` : `${rounded}%`;
 }
 
 function bulletLines(items: string[]) {
   return items.map((x) => `• ${x}`).join("\n");
 }
 
-/**
- * Premium local Research Assistant (free)
- * - No external API calls
- * - Grounded in SITE + BJS stats
- * - Later: swap answerLocally() for /api/chat and keep the UI
- */
+type LabeledPct = { label: string; pct: number };
+
+// Safe getter for arrays shaped like [{label, pct}]
+function getPctFromArray(arr: unknown, label: string): number | undefined {
+  if (!Array.isArray(arr)) return undefined;
+  const hit = (arr as any[]).find((x) => {
+    const l = String(x?.label ?? "").toLowerCase().trim();
+    return l === label.toLowerCase().trim();
+  });
+  const pct = Number(hit?.pct);
+  return Number.isFinite(pct) ? pct : undefined;
+}
+
+// Converts offense donut data into bullet output (expects array form)
+function offenseMixLines(offenseArr: unknown): string[] {
+  if (!Array.isArray(offenseArr)) return ["Offense mix is not available in the current dataset."];
+  const a = offenseArr as LabeledPct[];
+
+  // Keep order if labels exist, otherwise just list top
+  const order = ["Violent", "Property", "Drug", "Public order"];
+  const out: string[] = [];
+
+  const byLabel = (lab: string) => {
+    const hit = a.find((x) => String(x.label).toLowerCase() === lab.toLowerCase());
+    return hit ? `• ${lab}: ${formatPct(hit.pct, 1)}` : undefined;
+  };
+
+  const ordered = order.map(byLabel).filter(Boolean) as string[];
+  if (ordered.length) return ordered;
+
+  // fallback: list all items
+  for (const x of a) {
+    const lab = String(x?.label ?? "").trim();
+    const pct = Number(x?.pct);
+    if (lab && Number.isFinite(pct)) out.push(`• ${lab}: ${formatPct(pct, 1)}`);
+  }
+  return out.length ? out : ["Offense mix is not available in the current dataset."];
+}
+
 export default function ResearchBot() {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"ask" | "stats" | "sources">("ask");
@@ -57,24 +87,37 @@ export default function ResearchBot() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // focus input when opened
+  const links = useMemo(
+    () => ({
+      bjs2012pdf:
+        "https://bjs.ojp.gov/sites/g/files/xyckuh236/files/media/document/rpr34s125yfup1217.pdf",
+      bjs2018update:
+        "https://bjs.ojp.gov/library/publications/2018-update-prisoner-recidivism-9-year-follow-period-2005-2014",
+      statsPage: "/stats",
+      sourcesPage: "/sources",
+      researchPage: "/research",
+      policyPage: "/policy",
+    }),
+    []
+  );
+
+  // Focus input when opened
   useEffect(() => {
     if (!open) return;
     const t = setTimeout(() => inputRef.current?.focus(), 140);
     return () => clearTimeout(t);
   }, [open]);
 
-  // auto scroll
+  // Auto scroll
   useEffect(() => {
     if (!open) return;
     scrollRef.current?.scrollTo({ top: 999999, behavior: "smooth" });
   }, [open, msgs.length, busy]);
 
-  // keyboard shortcuts
+  // Keyboard shortcuts
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (!open) return;
-
       if (e.key === "Escape") setOpen(false);
 
       // Cmd/Ctrl + K focuses input
@@ -87,334 +130,273 @@ export default function ResearchBot() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const sources = useMemo(
-    () => ({
-      bjs2012pdf:
-        "https://bjs.ojp.gov/sites/g/files/xyckuh236/files/media/document/rpr34s125yfup1217.pdf",
-      bjs2018update:
-        "https://bjs.ojp.gov/library/publications/2018-update-prisoner-recidivism-9-year-follow-period-2005-2014",
-      sourcesPage: "/sources",
-      statsPage: "/stats",
-      researchPage: "/research",
-      policyPage: "/policy",
-    }),
-    []
-  );
-
   const quickChips = useMemo(
     () => [
       "Give me a 20-second interview summary.",
       "Explain the model in simple terms.",
-      "What are the limitations I should admit?",
-      "Summarize the main findings in 3 bullets.",
-      "Pull 5-year vs 9-year BJS stats.",
-      "Summarize the youth sentencing policy brief.",
-      "Summarize solitary confinement brief.",
+      "What limitations should I admit?",
+      "Summarize findings in 3 bullets.",
+      "Compare 5-year vs 9-year BJS numbers.",
+      "Summarize youth sentencing policy.",
+      "Summarize solitary confinement policy.",
     ],
     []
   );
 
+  // Grounded facts pulled from your site + statsData
   const grounded = useMemo(() => {
-    // Pull from SITE so the bot stays aligned with your writing
-    const research = SITE.research;
-    const policy = SITE.policy;
+    const r = SITE.research;
 
-    const bjs2012Year5 = BJS2012.cumulativeArrestOverTime?.slice(-1)?.[0]?.pct;
-    const bjs2012Year1 = BJS2012.cumulativeArrestOverTime?.[0]?.pct;
+    const year1 = BJS2012.cumulativeArrestOverTime?.[0]?.pct;
+    const year5 = BJS2012.cumulativeArrestOverTime?.slice(-1)?.[0]?.pct;
 
-    const bjs2018_3yr = BJS2018.arrestedWithin?.find((x) => x.years === 3)?.pct;
-    const bjs2018_9yr = BJS2018.arrestedWithin?.find((x) => x.years === 9)?.pct;
+    const b18_3 = BJS2018.arrestedWithin?.find((x: any) => x.years === 3)?.pct;
+    const b18_9 = BJS2018.arrestedWithin?.find((x: any) => x.years === 9)?.pct;
 
     return {
-      title: SITE.overview.title,
       author: SITE.author,
+      overviewTitle: SITE.overview.title,
 
-      researchTitle: research.title,
-      question: research.question,
-      methodBullets: research.methodBullets,
-      resultsBullets: research.resultsBullets,
-      limitationsBullets: research.limitationsBullets,
+      question: r.question,
+      methodBullets: r.methodBullets,
+      resultsBullets: r.resultsBullets,
+      limitationsBullets: r.limitationsBullets,
 
-      policyBriefs: policy.map((p) => ({
+      policyBriefs: SITE.policy.map((p) => ({
         title: p.title,
         oneLine: p.oneLine,
         bullets: p.bullets,
         bottomLine: p.bottomLine,
       })),
 
-      // stats snapshot for easy responses
       stats: {
         bjs2012: {
-          label: "BJS 2012 cohort (34 states)",
-          year1: bjs2012Year1,
-          year5: bjs2012Year5,
-          sex5yr: BJS2012.cumulativeArrest5yrBySex,
-          race5yr: BJS2012.cumulativeArrest5yrByRace,
-          offense: BJS2012.commitmentOffensePct,
-          totalReleased: BJS2012.totalReleased,
+          year1,
+          year5,
+          sex5yr: BJS2012.cumulativeArrest5yrBySex as unknown,
+          race5yr: BJS2012.cumulativeArrest5yrByRace as unknown,
+          offense: BJS2012.commitmentOffensePct as unknown,
+          totalReleased: (BJS2012 as any).totalReleased as number | undefined,
         },
         bjs2018: {
-          label: "BJS 2005 cohort (9-year follow-up update)",
-          threeYear: bjs2018_3yr,
-          nineYear: bjs2018_9yr,
-          released: BJS2018.cohortReleased2005,
+          threeYear: b18_3,
+          nineYear: b18_9,
+          released: (BJS2018 as any).cohortReleased2005 as number | undefined,
         },
       },
 
       disclaimer:
-        "This is informational. It’s not legal advice. This site is not advocating for crime; it focuses on documented injustice and evidence-based discussion.",
+        "This site is about injustice and outcomes, not excusing harm. Numbers are shown with sources so people can verify quickly.",
     };
   }, []);
 
-  function makeInterviewSummary() {
+  function interviewSummary() {
     return [
-      "Here’s a clean interview summary:",
+      "Clean interview summary:",
       "",
       "• I built a research brief on recidivism and reentry support.",
       "• I modeled recidivism using logistic regression with post-release employment as a measurable proxy, plus offense type and time served.",
       "• In this run, employment aligned with lower reoffending, offense type mattered, and time served wasn’t significant.",
       "",
-      "If you want, I can tighten that to one sentence.",
+      `Code: ${SITE.links.analysisRepo}`,
     ].join("\n");
   }
 
-  function makeModelExplanationSimple() {
+  function explainModelSimple() {
     return [
       "Model explanation (simple):",
       "",
-      `• Research question: ${grounded.question}`,
-      "• I used logistic regression to estimate how each factor relates to the odds of recidivism while holding other factors constant.",
-      "• The result is directional evidence. It’s a relationship, not proof of causation.",
+      `• Question: ${grounded.question}`,
+      "• Logistic regression estimates how each factor relates to the odds of recidivism while holding the others constant.",
+      "• I treat results as association, not causation.",
     ].join("\n");
   }
 
-  function makeLimitations() {
+  function limitations() {
     return [
-      "Limitations I would say out loud (clean + honest):",
+      "Limitations (honest, recruiter-safe):",
       "",
       bulletLines(grounded.limitationsBullets),
       "",
-      "How I defend the proxy without over-claiming:",
-      "• Employment is measurable and plausibly tied to reentry support, but it is not the same as program completion.",
-      "• That’s why the conclusions stay conservative.",
+      "Proxy defense (without over-claiming):",
+      "• Employment is measurable and plausibly tied to reentry support.",
+      "• It is not the same as program completion, so conclusions stay conservative.",
     ].join("\n");
   }
 
-  function makeFindings3() {
+  function findings3() {
     return [
-      "Key findings (3 bullets):",
+      "Key findings:",
       "",
       bulletLines(grounded.resultsBullets.slice(0, 3)),
       "",
-      "If you want a recruiter version, tell me the job title and I’ll rewrite it.",
+      "If you want a resume bullet version, tell me the job title.",
     ].join("\n");
   }
 
-  function makePolicyBrief(which: "teens" | "solitary") {
+  function policyBrief(which: "teens" | "solitary") {
     const match =
       which === "teens"
         ? grounded.policyBriefs.find((p) => p.title.toLowerCase().includes("teen"))
         : grounded.policyBriefs.find((p) => p.title.toLowerCase().includes("solitary"));
 
-    if (!match) {
-      return "I couldn’t find that brief in the site data. Check the Policy page.";
-    }
+    if (!match) return "I couldn’t find that brief in the site data. Check the Policy page.";
 
     return [
-      `${match.title} (short brief):`,
+      `${match.title}:`,
       "",
-      clampText(match.oneLine, 400),
+      clampText(match.oneLine, 450),
       "",
       "Strong points:",
       bulletLines(match.bullets),
       "",
       `Bottom line: ${match.bottomLine}`,
+      "",
+      `Verify: ${links.sourcesPage}`,
     ].join("\n");
   }
 
-  function makeStatsCompare() {
+  function statsCompare() {
     const b12 = grounded.stats.bjs2012;
     const b18 = grounded.stats.bjs2018;
 
-    const lines: string[] = [];
-    lines.push("BJS stats comparison (quick):");
-    lines.push("");
+    const out: string[] = [];
+    out.push("BJS comparison (quick):");
+    out.push("");
 
     if (typeof b12.year1 === "number" && typeof b12.year5 === "number") {
-      lines.push(
-        `• 2012 cohort (34 states): cumulative arrest rises from ${formatPct(b12.year1)} (Year 1) to ${formatPct(
-          b12.year5
+      out.push(
+        `• 2012 cohort (34 states): cumulative arrest rises from ${formatPct(b12.year1, 1)} (Year 1) to ${formatPct(
+          b12.year5,
+          1
         )} (Year 5).`
       );
     } else {
-      lines.push("• 2012 cohort: see Stats Lab for the full time series.");
+      out.push("• 2012 cohort: see Stats Lab for the full time series.");
     }
 
     if (typeof b18.threeYear === "number" && typeof b18.nineYear === "number") {
-      lines.push(
-        `• 2005 cohort (BJS update): arrested within 3 years ${formatPct(
-          b18.threeYear
-        )}, within 9 years ${formatPct(b18.nineYear)}.`
+      out.push(
+        `• 2005 cohort (BJS update): arrested within 3 years ${formatPct(b18.threeYear, 0)}, within 9 years ${formatPct(
+          b18.nineYear,
+          0
+        )}.`
       );
     } else {
-      lines.push("• 2005 cohort (BJS update): open the BJS page for the full set of numbers.");
+      out.push("• 2005 cohort (BJS update): open the BJS page for the full set of numbers.");
     }
 
-    lines.push("");
-    lines.push("Verify:");
-    lines.push(`• BJS 2012 PDF: ${sources.bjs2012pdf}`);
-    lines.push(`• BJS 2018 update: ${sources.bjs2018update}`);
-    lines.push(`• Stats Lab: ${sources.statsPage}`);
+    out.push("");
+    out.push("Verify:");
+    out.push(`• BJS 2012 PDF: ${links.bjs2012pdf}`);
+    out.push(`• BJS 2018 update: ${links.bjs2018update}`);
+    out.push(`• Stats Lab: ${links.statsPage}`);
 
-    return lines.join("\n");
+    return out.join("\n");
   }
 
-  function makeStatsSexRace() {
-  const b12 = grounded.stats.bjs2012;
+  function statsSexRace() {
+    const b12 = grounded.stats.bjs2012;
 
-  // supports either:
-  // 1) array form: [{ label: "Male", pct: 71.7 }, { label: "Female", pct: 63.1 }]
-  // 2) object form: { male: 71.7, female: 63.1 }
-  const getPct = (
-    v:
-      | { label: string; pct: number }[]
-      | { [k: string]: number }
-      | undefined,
-    keyOrLabel: string
-  ) => {
-    if (!v) return undefined;
+    const male = getPctFromArray(b12.sex5yr, "Male");
+    const female = getPctFromArray(b12.sex5yr, "Female");
 
-    if (Array.isArray(v)) {
-      const hit = v.find(
-        (x) => x.label.toLowerCase() === keyOrLabel.toLowerCase()
+    const white = getPctFromArray(b12.race5yr, "White");
+    const black = getPctFromArray(b12.race5yr, "Black");
+    const hispanic = getPctFromArray(b12.race5yr, "Hispanic");
+
+    const out: string[] = [];
+    out.push("BJS 2012 cohort breakdowns (Year 5):");
+    out.push("");
+
+    if (typeof male === "number" && typeof female === "number") {
+      out.push(`• Sex: male ${formatPct(male, 1)} vs female ${formatPct(female, 1)} (cumulative arrest).`);
+    } else {
+      out.push("• Sex: see Stats Lab chart.");
+    }
+
+    if (typeof white === "number" && typeof black === "number" && typeof hispanic === "number") {
+      out.push(
+        `• Race/ethnicity: White ${formatPct(white, 1)}, Black ${formatPct(black, 1)}, Hispanic ${formatPct(
+          hispanic,
+          1
+        )} (cumulative arrest).`
       );
-      return hit?.pct;
+    } else {
+      out.push("• Race/ethnicity: see Stats Lab chart.");
     }
 
-    // object
-    const k = keyOrLabel.toLowerCase();
-    // allow "male" or "Male"
-    return (v as any)[k] ?? (v as any)[keyOrLabel];
-  };
+    out.push("");
+    out.push("Verify:");
+    out.push(`• BJS 2012 PDF: ${links.bjs2012pdf}`);
+    out.push(`• Stats Lab: ${links.statsPage}`);
 
-  const male = getPct(b12.sex5yr as any, "Male") ?? getPct(b12.sex5yr as any, "male");
-  const female = getPct(b12.sex5yr as any, "Female") ?? getPct(b12.sex5yr as any, "female");
-
-  const white =
-    getPct(b12.race5yr as any, "White") ?? getPct(b12.race5yr as any, "white");
-  const black =
-    getPct(b12.race5yr as any, "Black") ?? getPct(b12.race5yr as any, "black");
-  const hispanic =
-    getPct(b12.race5yr as any, "Hispanic") ??
-    getPct(b12.race5yr as any, "hispanic");
-
-  const out: string[] = [];
-  out.push("Breakdowns from the BJS 2012 cohort (Year 5):");
-  out.push("");
-
-  if (typeof male === "number" && typeof female === "number") {
-    out.push(
-      `• Sex: male ${formatPct(male)} vs female ${formatPct(female)} (cumulative arrest).`
-    );
-  } else {
-    out.push("• Sex: see Stats Lab for the breakdown chart.");
+    return out.join("\n");
   }
 
-  if (
-    typeof white === "number" &&
-    typeof black === "number" &&
-    typeof hispanic === "number"
-  ) {
-    out.push(
-      `• Race/ethnicity: White ${formatPct(white)}, Black ${formatPct(
-        black
-      )}, Hispanic ${formatPct(hispanic)} (cumulative arrest).`
-    );
-  } else {
-    out.push("• Race/ethnicity: see Stats Lab for the breakdown chart.");
-  }
+  function statsOffenseMix() {
+    const lines = offenseMixLines(grounded.stats.bjs2012.offense);
 
-  out.push("");
-  out.push("Verify:");
-  out.push(`• BJS 2012 PDF: ${sources.bjs2012pdf}`);
-  out.push(`• Stats Lab: ${sources.statsPage}`);
-
-  return out.join("\n");
-}
-  function makeOffenseMix() {
-    const o = grounded.stats.bjs2012.offense;
-    if (!o) return "Offense distribution is not available in the current stats dataset.";
     return [
       "Most serious commitment offense mix (BJS 2012 cohort):",
       "",
-      `• Violent: ${formatPct(o.violent)}`,
-      `• Property: ${formatPct(o.property)}`,
-      `• Drug: ${formatPct(o.drug)}`,
-      `• Public order: ${formatPct(o.publicOrder)}`,
+      ...lines,
       "",
       "Verify:",
-      `• BJS 2012 PDF: ${sources.bjs2012pdf}`,
-      `• Stats Lab: ${sources.statsPage}`,
+      `• BJS 2012 PDF: ${links.bjs2012pdf}`,
+      `• Stats Lab: ${links.statsPage}`,
     ].join("\n");
   }
 
   function answerLocally(userText: string) {
     const q = userText.toLowerCase();
 
-    // Interview / recruiter
     if (q.includes("interview") || q.includes("recruiter") || q.includes("20-second") || q.includes("elevator")) {
-      return makeInterviewSummary();
+      return interviewSummary();
     }
 
-    // Model / method
     if (q.includes("model") || q.includes("logistic") || q.includes("logit") || q.includes("method")) {
-      return makeModelExplanationSimple();
+      return explainModelSimple();
     }
 
-    // Limitations / proxy
     if (q.includes("limit") || q.includes("weakness") || q.includes("proxy")) {
-      return makeLimitations();
+      return limitations();
     }
 
-    // Findings
     if (q.includes("finding") || q.includes("result") || q.includes("summary") || q.includes("key")) {
-      return makeFindings3();
+      return findings3();
     }
 
-    // Policy: teens/death penalty
     if (q.includes("teen") || q.includes("juvenile") || q.includes("death")) {
-      return makePolicyBrief("teens");
+      return policyBrief("teens");
     }
 
-    // Policy: solitary
     if (q.includes("solitary") || q.includes("isolation")) {
-      return makePolicyBrief("solitary");
-    }
-
-    // Stats
-    if (q.includes("bjs") || q.includes("34 states") || q.includes("5-year") || q.includes("9-year") || q.includes("over time")) {
-      return makeStatsCompare();
+      return policyBrief("solitary");
     }
 
     if (q.includes("sex") || q.includes("female") || q.includes("male") || q.includes("race") || q.includes("hispanic") || q.includes("black") || q.includes("white")) {
-      return makeStatsSexRace();
+      return statsSexRace();
     }
 
     if (q.includes("offense") || q.includes("violent") || q.includes("property") || q.includes("drug") || q.includes("public order")) {
-      return makeOffenseMix();
+      return statsOffenseMix();
     }
 
-    // Default
+    if (q.includes("bjs") || q.includes("34 states") || q.includes("5-year") || q.includes("9-year") || q.includes("over time")) {
+      return statsCompare();
+    }
+
     return [
       "Tell me what you want:",
       "",
       "• interview summary",
-      "• method explanation",
-      "• limitations/proxy defense",
+      "• model explanation",
+      "• limitations and proxy defense",
       "• key findings",
-      "• BJS stats (5-year vs 9-year, sex/race, offense mix)",
+      "• BJS stats (5 vs 9 years, sex/race, offense mix)",
       "",
-      "If you type “stats,” I’ll pull from the Stats Lab dataset.",
+      `Shortcuts: Stats tab, Sources tab, or ask me directly.`,
     ].join("\n");
   }
 
@@ -426,11 +408,10 @@ export default function ResearchBot() {
     setInput("");
     setBusy(true);
 
-    // premium “thinking” delay
+    // small delay so it feels premium but fast
     await new Promise((r) => setTimeout(r, 420));
 
     const a = answerLocally(t);
-
     setMsgs((m) => [...m, { role: "assistant", content: a, ts: Date.now() }]);
     setBusy(false);
   }
@@ -439,15 +420,13 @@ export default function ResearchBot() {
     setMsgs([
       {
         role: "assistant",
-        content:
-          "Chat cleared. Ask about research, policy, or stats. I’ll keep it grounded in this site’s sources.",
+        content: "Chat cleared. Ask about research, policy, or stats. I’ll keep it grounded in this site’s sources.",
         ts: Date.now(),
       },
     ]);
     setTab("ask");
   }
 
-  // Small helper panel for stats tab (looks premium, zero fluff)
   function StatsPanel() {
     const b12 = grounded.stats.bjs2012;
     const b18 = grounded.stats.bjs2018;
@@ -459,19 +438,20 @@ export default function ResearchBot() {
           <div className="mt-2 text-sm text-white/80 leading-relaxed">
             {typeof b12.year1 === "number" && typeof b12.year5 === "number" ? (
               <>
-                Cumulative arrest rises from <span className="font-semibold text-white">{formatPct(b12.year1)}</span> (Year 1)
-                to <span className="font-semibold text-white">{formatPct(b12.year5)}</span> (Year 5).
+                Cumulative arrest rises from <span className="font-semibold text-white">{formatPct(b12.year1, 1)}</span> (Year 1)
+                to <span className="font-semibold text-white">{formatPct(b12.year5, 1)}</span> (Year 5).
               </>
             ) : (
               <>Open Stats Lab for the full time series chart.</>
             )}
           </div>
+
           <div className="mt-3 flex flex-wrap gap-2">
             <button
-              onClick={() => send("Pull 5-year vs 9-year BJS stats.")}
+              onClick={() => send("Compare 5-year vs 9-year BJS numbers.")}
               className="text-xs px-3 py-2 rounded-2xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 text-white/80 transition"
             >
-              Compare 5 vs 9 years
+              5 vs 9 years
             </button>
             <button
               onClick={() => send("Show sex and race breakdown stats.")}
@@ -493,26 +473,26 @@ export default function ResearchBot() {
           <div className="mt-2 text-sm text-white/80 leading-relaxed">
             {typeof b18.threeYear === "number" && typeof b18.nineYear === "number" ? (
               <>
-                Arrested within 3 years <span className="font-semibold text-white">{formatPct(b18.threeYear)}</span>, within 9 years{" "}
-                <span className="font-semibold text-white">{formatPct(b18.nineYear)}</span>.
+                Arrested within 3 years <span className="font-semibold text-white">{formatPct(b18.threeYear, 0)}</span>,
+                within 9 years <span className="font-semibold text-white">{formatPct(b18.nineYear, 0)}</span>.
               </>
             ) : (
-              <>Open the BJS update page for the complete set of numbers.</>
+              <>Open the BJS update page for the full set of numbers.</>
             )}
           </div>
         </div>
 
         <div className="text-[11px] text-white/55 leading-relaxed">
           Sources:{" "}
-          <a className="text-white/75 hover:text-white underline" href={sources.bjs2012pdf} target="_blank" rel="noreferrer">
+          <a className="text-white/75 hover:text-white underline" href={links.bjs2012pdf} target="_blank" rel="noreferrer">
             BJS 2012 PDF
           </a>{" "}
           and{" "}
-          <a className="text-white/75 hover:text-white underline" href={sources.bjs2018update} target="_blank" rel="noreferrer">
+          <a className="text-white/75 hover:text-white underline" href={links.bjs2018update} target="_blank" rel="noreferrer">
             BJS 2018 update
           </a>
-          . Stats visuals live on{" "}
-          <a className="text-white/75 hover:text-white underline" href={sources.statsPage}>
+          . Charts live on{" "}
+          <a className="text-white/75 hover:text-white underline" href={links.statsPage}>
             Stats Lab
           </a>
           .
@@ -525,46 +505,34 @@ export default function ResearchBot() {
     return (
       <div className="space-y-4">
         <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4">
-          <div className="text-xs uppercase tracking-widest text-white/60">Primary verification</div>
+          <div className="text-xs uppercase tracking-widest text-white/60">Verify fast</div>
           <div className="mt-2 text-sm text-white/80 leading-relaxed">
-            If someone wants to check a claim, the fastest path is Stats Lab for numbers and Sources for citations.
+            Stats Lab is for numbers. Sources is for citations. Research is for your method and findings.
           </div>
 
           <div className="mt-3 grid gap-2">
             <a
-              href={sources.statsPage}
+              href={links.researchPage}
               className="rounded-2xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 p-3 transition"
             >
-              <div className="text-sm font-semibold text-white">Open Stats Lab</div>
-              <div className="mt-1 text-xs text-white/55">Charts built from BJS reporting</div>
+              <div className="text-sm font-semibold text-white">Open Research</div>
+              <div className="mt-1 text-xs text-white/55">Method, findings, limits</div>
             </a>
 
             <a
-              href={sources.sourcesPage}
+              href={links.statsPage}
+              className="rounded-2xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 p-3 transition"
+            >
+              <div className="text-sm font-semibold text-white">Open Stats Lab</div>
+              <div className="mt-1 text-xs text-white/55">Charts from BJS reporting</div>
+            </a>
+
+            <a
+              href={links.sourcesPage}
               className="rounded-2xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 p-3 transition"
             >
               <div className="text-sm font-semibold text-white">Open Sources</div>
               <div className="mt-1 text-xs text-white/55">Primary links and readings</div>
-            </a>
-
-            <a
-              href={sources.bjs2012pdf}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-2xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 p-3 transition"
-            >
-              <div className="text-sm font-semibold text-white">BJS 2012 PDF</div>
-              <div className="mt-1 text-xs text-white/55 break-all">{sources.bjs2012pdf}</div>
-            </a>
-
-            <a
-              href={sources.bjs2018update}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-2xl bg-white/5 hover:bg-white/10 ring-1 ring-white/10 p-3 transition"
-            >
-              <div className="text-sm font-semibold text-white">BJS 2018 update</div>
-              <div className="mt-1 text-xs text-white/55 break-all">{sources.bjs2018update}</div>
             </a>
           </div>
         </div>
@@ -581,7 +549,7 @@ export default function ResearchBot() {
 
   return (
     <>
-      {/* Floating launcher: bigger, obvious, still tasteful */}
+      {/* Floating launcher */}
       <div className="fixed right-5 bottom-5 z-[99999]">
         <button
           onClick={() => setOpen(true)}
@@ -608,22 +576,18 @@ export default function ResearchBot() {
             </span>
           </span>
 
-          <span className="ml-auto text-white/55 text-xs hidden sm:inline">
-            ⌘K
-          </span>
+          <span className="ml-auto text-white/55 text-xs hidden sm:inline">⌘K</span>
         </button>
       </div>
 
       {/* Modal */}
       {open ? (
         <div className="fixed inset-0 z-[99998]">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/45 backdrop-blur-[2px]"
             onClick={() => setOpen(false)}
           />
 
-          {/* Panel */}
           <div className="absolute right-5 bottom-5 w-[94vw] max-w-[460px]">
             <div className="overflow-hidden rounded-3xl ring-1 ring-white/12 bg-neutral-950/82 backdrop-blur-xl shadow-[0_30px_100px_rgba(0,0,0,0.58)]">
               {/* Header */}
@@ -638,7 +602,7 @@ export default function ResearchBot() {
                       Research Assistant
                     </div>
                     <div className="text-xs text-white/60 truncate">
-                      Short, grounded answers • Esc closes
+                      Short, grounded answers
                     </div>
                   </div>
 
@@ -704,9 +668,8 @@ export default function ResearchBot() {
                   <SourcesPanel />
                 ) : (
                   <>
-                    {/* Quick chips */}
                     <div className="flex flex-wrap gap-2">
-                      {quickChips.slice(0, 6).map((s) => (
+                      {quickChips.map((s) => (
                         <button
                           key={s}
                           onClick={() => send(s)}
@@ -717,11 +680,7 @@ export default function ResearchBot() {
                       ))}
                     </div>
 
-                    {/* Messages */}
-                    <div
-                      ref={scrollRef}
-                      className="mt-4 h-[340px] overflow-auto pr-1"
-                    >
+                    <div ref={scrollRef} className="mt-4 h-[340px] overflow-auto pr-1">
                       <div className="space-y-3">
                         {msgs.map((m) => (
                           <div
@@ -748,7 +707,6 @@ export default function ResearchBot() {
                       </div>
                     </div>
 
-                    {/* Input */}
                     <div className="mt-4 flex items-center gap-2">
                       <div className="flex-1 relative">
                         <input
