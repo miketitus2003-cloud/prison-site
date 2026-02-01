@@ -22,7 +22,7 @@ export default function AboutPage() {
           className="h-full w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-white/90" />
+        <div className="absolute inset-0 bg-[#06080f]/75" />
         <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/90 to-[#f7f8fb]" />
       </div>
 
@@ -42,7 +42,7 @@ export default function AboutPage() {
           <div className="mt-10 grid lg:grid-cols-12 gap-6">
             {/* Left column */}
             <div className="lg:col-span-7 space-y-6">
-              <Surface className="bg-white/90">
+              <Surface className="bg-[#06080f]/75">
                 <H2>The mission</H2>
                 <div className="mt-3 space-y-3">
                   <P className="text-black">
@@ -123,7 +123,7 @@ export default function AboutPage() {
                 </P>
               </Surface>
 
-              <Surface className="bg-white/90">
+              <Surface className="bg-[#06080f]/75">
                 <H2>Skills demonstrated (ATS-friendly)</H2>
                 <div className="mt-4 grid sm:grid-cols-2 gap-3">
                   {[
@@ -147,7 +147,7 @@ export default function AboutPage() {
 
             {/* Right column */}
             <div className="lg:col-span-5 space-y-6">
-              <Surface className="bg-white/90">
+              <Surface className="bg-[#06080f]/75">
                 <H2>Author</H2>
                 <div className="mt-3 space-y-3">
                   <P>
@@ -178,7 +178,7 @@ export default function AboutPage() {
                 </div>
               </Surface>
 
-              <Surface className="bg-white/90">
+              <Surface className="bg-[#06080f]/75">
                 <H2>Notes for reviewers</H2>
                 <div className="mt-3 space-y-3">
                   <P>

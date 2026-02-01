@@ -11,7 +11,7 @@ export default function SourcesPage() {
           className="h-full w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-white/90" />
+        <div className="absolute inset-0 bg-[#06080f]/75" />
         <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/90 to-[#f7f8fb]" />
       </div>
 
@@ -28,7 +28,7 @@ export default function SourcesPage() {
           </div>
 
           <div className="mt-8 grid lg:grid-cols-2 gap-6">
-            <Card className="bg-white/90">
+            <Card className="bg-[#06080f]/75">
               <H2>Primary links</H2>
               <Divider />
               <div className="space-y-4">
@@ -47,7 +47,7 @@ export default function SourcesPage() {
               </div>
             </Card>
 
-            <Card className="bg-white/90">
+            <Card className="bg-[#06080f]/75">
               <H2>Verification standard</H2>
               <Divider />
               <div className="space-y-3 text-sm text-black/70 leading-relaxed">
@@ -74,7 +74,7 @@ export default function SourcesPage() {
           </div>
 
           <div className="mt-8">
-            <Card className="bg-white/90">
+            <Card className="bg-[#06080f]/75">
               <H2>Claim mapping</H2>
               <Divider />
               <div className="space-y-4">
@@ -95,7 +95,7 @@ export default function SourcesPage() {
           </div>
 
           <div className="mt-8 grid lg:grid-cols-2 gap-6">
-            <Card className="bg-white/90">
+            <Card className="bg-[#06080f]/75">
               <H2>Image credits</H2>
               <Divider />
               <P>
@@ -113,7 +113,7 @@ export default function SourcesPage() {
               </div>
             </Card>
 
-            <Card className="bg-white/90">
+            <Card className="bg-[#06080f]/75">
               <H2>Ethics and intent</H2>
               <Divider />
               <P>

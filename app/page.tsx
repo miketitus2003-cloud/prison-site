@@ -12,7 +12,7 @@ export default function OverviewPage() {
           className="h-full w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-white/85" />
+        <div className="absolute inset-0 bg-[#06080f]/75" />
         <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/85 to-[#f7f8fb]" />
       </div>
 
