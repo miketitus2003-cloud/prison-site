@@ -1,4 +1,3 @@
-// app/research/page.tsx
 import {
   Container,
   Card,
@@ -9,159 +8,144 @@ import {
   Bullets,
   Divider,
   ButtonLink,
-  Badge,
-  Callout,
 } from "@/components/ui";
 import { SITE } from "@/components/siteData";
 import SlideGallery from "@/components/SlideGallery";
-import ModelCard from "@/components/ModelCard";
 
 export default function ResearchPage() {
   return (
-    <Container>
-      <div className="pt-12 sm:pt-16 pb-12">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="accent">Research</Badge>
-          <Badge tone="neutral">Slides</Badge>
-          <Badge tone="neutral">Model notes</Badge>
-        </div>
-
-        <H1>{SITE.research.title}</H1>
-
-        <div className="mt-4 max-w-3xl">
-          <P>
-            This page presents the model as directional evidence, not causation. The goal is clarity, honesty about limits, and easy verification through sources.
-          </P>
-        </div>
-
-        <div className="mt-6">
-          <Callout title="Key takeaway" tone="accent">
-            Employment after release is associated with a lower likelihood of reoffending in this run. Offense type also matters. This is not a causal claim.
-          </Callout>
-        </div>
-
-        {/* Slides */}
-        <div className="mt-8">
-          <SlideGallery
-            slides={SITE.research.slides}
-            title="Slide walkthrough"
-            subtitle="Scroll through the deck. Each panel is widescreen so the full slide stays readable."
-          />
-        </div>
-
-        {/* Results snapshot */}
-        <div className="mt-10 grid md:grid-cols-3 gap-4">
-          <div className="rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-5">
-            <div className="text-xs uppercase tracking-widest text-black/50">Result</div>
-            <div className="mt-2 text-lg font-semibold text-black">Employment</div>
-            <div className="mt-1 text-sm text-black/70">
-              Associated with lower reoffending in this run.
-            </div>
-          </div>
-          <div className="rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-5">
-            <div className="text-xs uppercase tracking-widest text-black/50">Result</div>
-            <div className="mt-2 text-lg font-semibold text-black">Offense type</div>
-            <div className="mt-1 text-sm text-black/70">
-              Violent offense type aligned with higher return likelihood.
-            </div>
-          </div>
-          <div className="rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-5">
-            <div className="text-xs uppercase tracking-widest text-black/50">Result</div>
-            <div className="mt-2 text-lg font-semibold text-black">Time served</div>
-            <div className="mt-1 text-sm text-black/70">
-              Not statistically significant in this run.
-            </div>
-          </div>
-        </div>
-
-        {/* Model accountability */}
-        <div className="mt-8">
-          <ModelCard
-            n={2500}
-            posRate="Recidivism positive class shown in demo output"
-            features={[
-              "Employed after release (proxy)",
-              "Offense type (violent vs drug)",
-              "Time served (years)",
-            ]}
-            evaluation={[
-              "Demo focuses on interpretability and reporting discipline",
-              "If expanded: add train test split and calibration checks",
-            ]}
-            metrics={[
-              { label: "Focus", value: "Interpretability" },
-              { label: "Claim type", value: "Association" },
-            ]}
-            notes={[
-              "Do not claim employment causes lower recidivism",
-              "Proxy is measurable but not program completion",
-              "Real validation requires administrative program participation records",
-            ]}
-          />
-        </div>
-
-        {/* Main cards */}
-        <div className="mt-10 grid lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 space-y-6">
-            <Card>
-              <H2>Method</H2>
-              <Bullets items={SITE.research.methodBullets} />
-              <Divider />
-              <div className="flex flex-wrap gap-3">
-                <ButtonLink href={SITE.links.analysisRepo} external variant="primary">
-                  Open analysis repo
-                </ButtonLink>
-                <ButtonLink href="/stats" variant="secondary">
-                  Stats Lab
-                </ButtonLink>
-                <ButtonLink href="/sources" variant="ghost">
-                  Sources
-                </ButtonLink>
-              </div>
-            </Card>
-
-            <Card>
-              <H2>Findings</H2>
-              <Bullets items={SITE.research.resultsBullets} />
-            </Card>
-          </div>
-
-          <div className="lg:col-span-5 space-y-6">
-            <Card>
-              <H2>Limits</H2>
-              <Bullets items={SITE.research.limitationsBullets} />
-            </Card>
-
-            <Card>
-              <H2>Reproduce</H2>
-              <P>
-                The code repository contains the model setup and supporting materials.
-              </P>
-              <Divider />
-              <P className="text-sm">
-                Recommended steps:
-              </P>
-              <ul className="mt-3 text-sm text-black/70 space-y-1">
-                <li>• Clone the repo</li>
-                <li>• Install dependencies</li>
-                <li>• Run the analysis script or notebook</li>
-                <li>• Confirm the figures match the site visuals</li>
-              </ul>
-              <div className="mt-4">
-                <ButtonLink href={SITE.links.analysisRepo} external variant="secondary">
-                  View reproduce steps in repo
-                </ButtonLink>
-              </div>
-            </Card>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <Callout title="Causality note" tone="warn">
-            This work reports relationships. Stronger versions would add administrative education participation records and richer controls.
-          </Callout>
-        </div>
+    <div className="relative">
+      <div className="absolute inset-0 -z-10">
+        <img
+          src="https://images.unsplash.com/photo-1526378722484-bd91ca387e72?auto=format&fit=crop&w=2200&q=70"
+          alt="Insights background"
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-white/88" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/88 to-[#f7f8fb]" />
       </div>
-    </Container>
+
+      <Container>
+        <div className="pt-12 sm:pt-16 pb-12">
+          <Kicker>Insights</Kicker>
+          <H1>{SITE.research.title}</H1>
+
+          <div className="mt-4 max-w-3xl">
+            <P>
+              This page explains the question, method, findings, and limits in a format designed for skimming.
+              Language is standardized to association, not causation.
+            </P>
+          </div>
+
+          <div className="mt-8 grid lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-7 space-y-6">
+              <Card className="bg-white/90">
+                <H2>Results snapshot</H2>
+                <div className="mt-4 grid sm:grid-cols-3 gap-3">
+                  <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                    <div className="text-xs uppercase tracking-widest text-black/50">Direction</div>
+                    <div className="mt-2 text-sm font-semibold text-black">Employment ↘ reoffending</div>
+                    <div className="mt-1 text-sm text-black/70">Directional association</div>
+                  </div>
+                  <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                    <div className="text-xs uppercase tracking-widest text-black/50">Top driver</div>
+                    <div className="mt-2 text-sm font-semibold text-black">Offense type mattered</div>
+                    <div className="mt-1 text-sm text-black/70">Directional association</div>
+                  </div>
+                  <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                    <div className="text-xs uppercase tracking-widest text-black/50">Do not conclude</div>
+                    <div className="mt-2 text-sm font-semibold text-black">No causality</div>
+                    <div className="mt-1 text-sm text-black/70">Transparent limits</div>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-white/90">
+                <H2>Method</H2>
+                <Bullets items={SITE.research.methodBullets} />
+                <Divider />
+                <div className="flex flex-wrap gap-3">
+                  <ButtonLink href={SITE.links.analysisRepo} external variant="secondary">
+                    Open analysis repo
+                  </ButtonLink>
+                  <ButtonLink href="/stats" variant="ghost">
+                    Dashboard
+                  </ButtonLink>
+                </div>
+              </Card>
+
+              <Card className="bg-white/90">
+                <H2>Findings</H2>
+                <Bullets items={SITE.research.resultsBullets} />
+              </Card>
+
+              <Card className="bg-white/90">
+                <H2>Slide walkthrough</H2>
+                <P className="mt-2">
+                  Scroll through the deck as a narrative. Each panel is widescreen and designed to stay readable.
+                </P>
+                <div className="mt-6">
+                  <SlideGallery
+                    slides={SITE.research.slides}
+                    title="Slide walkthrough"
+                    subtitle="A scroll-first walkthrough of the deck highlights, one-by-one."
+                  />
+                </div>
+              </Card>
+            </div>
+
+            <div className="lg:col-span-5 space-y-6">
+              <Card className="bg-white/90">
+                <H2>Model card</H2>
+                <div className="mt-3 space-y-3 text-sm text-black/70">
+                  <div>
+                    <div className="text-xs uppercase tracking-widest text-black/50">Goal</div>
+                    <div className="mt-1">{SITE.research.modelCard.goal}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-widest text-black/50">Data</div>
+                    <div className="mt-1">{SITE.research.modelCard.data}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase tracking-widest text-black/50">Evaluation</div>
+                    <div className="mt-1">{SITE.research.modelCard.evaluation}</div>
+                  </div>
+                </div>
+
+                <Divider />
+
+                <div className="text-xs uppercase tracking-widest text-black/50">Do not conclude</div>
+                <ul className="mt-3 space-y-2 text-sm text-black/70">
+                  {SITE.research.modelCard.doNotConclude.map((x) => (
+                    <li key={x} className="flex gap-3">
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-black/45" />
+                      <span>{x}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+
+              <Card className="bg-white/90">
+                <H2>Limits</H2>
+                <Bullets items={SITE.research.limitationsBullets} />
+              </Card>
+
+              <div className="rounded-3xl bg-gradient-to-br from-indigo-50 via-white to-sky-50 ring-1 ring-black/10 p-6">
+                <div className="text-sm font-semibold text-black">Interpretation rule</div>
+                <div className="mt-2 text-sm text-black/70">
+                  This work is presented as directional evidence. Better versions would use administrative program participation
+                  data and richer controls.
+                </div>
+              </div>
+
+              <div className="text-xs text-black/45">
+                Background photo credit is listed on Sources.
+              </div>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </div>
   );
 }

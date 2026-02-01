@@ -1,120 +1,138 @@
-// app/sources/page.tsx
-import { Container, Kicker, H1, P, Badge } from "@/components/ui";
+import { Container, Card, Kicker, H1, H2, P, Divider } from "@/components/ui";
 import { SITE } from "@/components/siteData";
 
-function SourceLink({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="block rounded-2xl bg-white ring-1 ring-black/10 p-4 hover:bg-neutral-50 transition"
-    >
-      <div className="text-sm font-semibold text-black">{label}</div>
-      <div className="mt-1 text-xs text-black/55 break-all">{href}</div>
-    </a>
-  );
-}
-
 export default function SourcesPage() {
-  const primary = SITE.sources.primaryLinks;
-
   return (
-    <Container>
-      <div className="pt-12 sm:pt-16 pb-12">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="accent">Sources</Badge>
-          <Badge tone="neutral">Claim mapping</Badge>
-        </div>
-
-        <H1>Sources and references</H1>
-
-        <div className="mt-4 max-w-3xl">
-          <P>
-            Sources are grouped by what they support so it is easy to verify claims quickly. Primary and official sources come first.
-          </P>
-        </div>
-
-        {/* Primary */}
-        <div className="mt-8">
-          <div className="text-sm font-semibold text-black">Primary data and official reporting</div>
-          <div className="mt-3 grid md:grid-cols-2 gap-4">
-            {primary.map((s) => (
-              <SourceLink key={s.href} href={s.href} label={s.label} />
-            ))}
-          </div>
-        </div>
-
-        {/* Claim mapping */}
-        <div className="mt-10 grid lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-6">
-            <div className="text-sm font-semibold text-black">Claim to source mapping</div>
-
-            <div className="mt-4 space-y-4 text-sm text-black/70">
-              <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-                <div className="font-semibold text-black">Recidivism rises with longer follow up time</div>
-                <div className="mt-2 space-y-2">
-                  <div>• BJS 2012 cohort shows cumulative arrest rises quickly over five years</div>
-                  <div>• BJS 9 year follow up update shows continued increase with longer tracking</div>
-                </div>
-              </div>
-
-              <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-                <div className="font-semibold text-black">Correctional education literature links programs to improved outcomes</div>
-                <div className="mt-2">• RAND correctional education meta analysis</div>
-              </div>
-
-              <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-                <div className="font-semibold text-black">Solitary confinement has documented psychological harms</div>
-                <div className="mt-2 space-y-1">
-                  {SITE.sources.articlesAndReads
-                    .filter((x) => x.toLowerCase().includes("solitary"))
-                    .map((x) => (
-                      <div key={x}>• {x}</div>
-                    ))}
-                </div>
-              </div>
-
-              <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-                <div className="font-semibold text-black">Youth sentencing and irreversible punishment risks</div>
-                <div className="mt-2 space-y-1">
-                  <div>• Roper v. Simmons, 543 U.S. 551 (2005)</div>
-                  <div>• Death Penalty Information Center</div>
-                  <div>• Innocence Project and National Registry of Exonerations</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick reference */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-6">
-              <div className="text-sm font-semibold text-black">Legal</div>
-              <div className="mt-3 text-sm text-black/70 space-y-1">
-                {SITE.sources.legalCases.map((c) => (
-                  <div key={c}>• {c}</div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-6">
-              <div className="text-sm font-semibold text-black">Articles and background reading</div>
-              <div className="mt-3 text-sm text-black/70 space-y-2">
-                {SITE.sources.articlesAndReads.map((a) => (
-                  <div key={a}>• {a}</div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-3xl bg-neutral-50 ring-1 ring-black/10 p-6">
-              <div className="text-sm font-semibold text-black">Note</div>
-              <div className="mt-2 text-sm text-black/70">
-                If you want the fastest verification path, use Stats Lab for numbers and this page for citations.
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="relative">
+      <div className="absolute inset-0 -z-10">
+        <img
+          src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=2200&q=70"
+          alt="Sources background"
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-white/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/90 to-[#f7f8fb]" />
       </div>
-    </Container>
+
+      <Container>
+        <div className="pt-12 sm:pt-16 pb-12">
+          <Kicker>Sources</Kicker>
+          <H1>Claim to source mapping</H1>
+
+          <div className="mt-4 max-w-3xl">
+            <P>
+              This page is the credibility engine. Claims are paired with sources and labeled by quality.
+              Advocacy sources are labeled clearly when used for context.
+            </P>
+          </div>
+
+          <div className="mt-8 grid lg:grid-cols-2 gap-6">
+            <Card className="bg-white/90">
+              <H2>Primary links</H2>
+              <Divider />
+              <div className="space-y-4">
+                {SITE.sources.primaryLinks.map((s) => (
+                  <div key={s.href} className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                    <div className="text-sm font-semibold text-black">{s.label}</div>
+                    <div className="mt-1 text-xs text-black/55">{s.quality}</div>
+                    <div className="mt-2 text-sm text-black/70">{s.usedFor}</div>
+                    <div className="mt-3">
+                      <a className="underline text-sm" href={s.href} target="_blank" rel="noreferrer">
+                        Open source
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="bg-white/90">
+              <H2>Verification standard</H2>
+              <Divider />
+              <div className="space-y-3 text-sm text-black/70 leading-relaxed">
+                <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                  <div className="text-xs uppercase tracking-widest text-black/50">Rule</div>
+                  <div className="mt-2">
+                    Every chart links to a primary source. Every interpretation note states what the chart measures and does not measure.
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                  <div className="text-xs uppercase tracking-widest text-black/50">Language</div>
+                  <div className="mt-2">
+                    Association only. No causal claims. Descriptive summary first.
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                  <div className="text-xs uppercase tracking-widest text-black/50">Fast verification path</div>
+                  <div className="mt-2">
+                    Dashboard for numbers. Sources for citations. Insights for framing and limits.
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="mt-8">
+            <Card className="bg-white/90">
+              <H2>Claim mapping</H2>
+              <Divider />
+              <div className="space-y-4">
+                {SITE.sources.claimMap.map((c) => (
+                  <div key={c.claim} className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-5">
+                    <div className="text-sm font-semibold text-black">Claim</div>
+                    <div className="mt-2 text-sm text-black/75">{c.claim}</div>
+                    <div className="mt-4 text-xs uppercase tracking-widest text-black/50">Sources</div>
+                    <ul className="mt-2 space-y-1 text-sm text-black/70">
+                      {c.sources.map((s) => (
+                        <li key={s}>• {s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+
+          <div className="mt-8 grid lg:grid-cols-2 gap-6">
+            <Card className="bg-white/90">
+              <H2>Image credits</H2>
+              <Divider />
+              <P>
+                Background photos used for visual context are sourced from Unsplash image URLs. This keeps visuals high quality while remaining transparent.
+              </P>
+              <div className="mt-4 text-sm text-black/70 space-y-2">
+                <div>Overview background: Unsplash image URL in the Overview page</div>
+                <div>Dashboard background: Unsplash image URL in the Dashboard page</div>
+                <div>Insights background: Unsplash image URL in the Insights page</div>
+                <div>Policy background: Unsplash image URL in the Policy page</div>
+                <div>Sources background: Unsplash image URL in the Sources page</div>
+              </div>
+              <div className="mt-4 text-xs text-black/55">
+                If you want perfect attribution lines, send me the exact Unsplash page links you prefer and I will format photographer credits cleanly.
+              </div>
+            </Card>
+
+            <Card className="bg-white/90">
+              <H2>Ethics and intent</H2>
+              <Divider />
+              <P>
+                This site is not advocating for crime. It focuses on documented injustice, transparent measurement, and policies that reduce harm and improve reentry outcomes.
+              </P>
+              <div className="mt-4 rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                <div className="text-xs uppercase tracking-widest text-black/50">What to do next</div>
+                <div className="mt-2 text-sm text-black/70">
+                  If you want a deeper evaluation, start with Dashboard for patterns, then read Insights for limits, then use the claim map to verify quickly.
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="mt-10 text-xs text-black/45">
+            Background photo credit is listed here to keep usage transparent.
+          </div>
+        </div>
+      </Container>
+    </div>
   );
 }
