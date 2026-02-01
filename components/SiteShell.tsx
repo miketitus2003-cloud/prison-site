@@ -95,3 +95,9 @@ export default function SiteShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
+<Link
+  className="px-3 py-2 rounded-full bg-white ring-1 ring-black/10 hover:bg-neutral-50 transition"
+  href="/about"
+>
+  About
+</Link>
