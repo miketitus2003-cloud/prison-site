@@ -1,26 +1,31 @@
-@import "tailwindcss";
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* ====== Theme tokens ====== */
+/* ====== Dark theme tokens (smooth black, no grid) ====== */
 :root {
-  --bg: 255 255 255;
-  --fg: 17 24 39;      /* slate-900 */
-  --muted: 75 85 99;   /* slate-600 */
-  --line: 229 231 235; /* gray-200 */
+  color-scheme: dark;
 
-  --card: 255 255 255;
-  --shadow: 15 23 42;  /* slate-900-ish */
+  --bg: 6 8 15;          /* #06080f */
+  --fg: 255 255 255;     /* white */
+  --muted: 170 180 205;  /* muted text */
+  --line: 255 255 255;   /* borders use alpha */
 
-  --accent: 37 99 235; /* blue-600 */
-  --accent2: 99 102 241; /* indigo-500 */
+  --card: 255 255 255;   /* card bg uses alpha */
+  --accent: 56 189 248;  /* cyan */
+  --accent2: 34 197 94;  /* green */
+  --accent3: 168 85 247; /* purple */
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 body {
   background: rgb(var(--bg));
-  color: rgb(var(--fg));
+  color: rgba(var(--fg), 0.92);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -35,7 +40,7 @@ p  { line-height: 1.8; }
 
 /* selection color */
 ::selection {
-  background: rgba(var(--accent), 0.18);
+  background: rgba(var(--accent), 0.22);
 }
 
 /* links default */
@@ -43,25 +48,20 @@ a {
   color: inherit;
   text-decoration: none;
 }
-/* add at bottom of app/globals.css */
 
+/* optional utility helpers */
 :root {
-  --shadow-soft: 0 16px 60px rgba(0, 0, 0, 0.06);
+  --shadow-soft: 0 18px 70px rgba(0, 0, 0, 0.45);
 }
 
 .shadow-soft {
   box-shadow: var(--shadow-soft);
 }
 
-.bg-grid {
-  background-image:
-    radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
+/* subtle “section glow band” you can use on hero sections */
 .section-band {
   background:
-    radial-gradient(1200px 420px at 20% 0%, rgba(99,102,241,0.10), transparent 65%),
-    radial-gradient(900px 380px at 80% 0%, rgba(16,185,129,0.10), transparent 65%),
-    linear-gradient(to bottom, rgba(0,0,0,0.02), transparent 55%);
+    radial-gradient(1200px 520px at 18% 0%, rgba(var(--accent), 0.22), transparent 62%),
+    radial-gradient(900px 480px at 78% 0%, rgba(var(--accent2), 0.16), transparent 62%),
+    radial-gradient(720px 520px at 85% 95%, rgba(var(--accent3), 0.18), transparent 60%);
 }

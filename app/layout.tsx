@@ -9,7 +9,6 @@ const SITE_URL = "https://prison-site-omega.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
-  // ✅ New positioning
   title: {
     default: "Prison Policy Data Platform — Michael Parham",
     template: "%s — Michael Parham",
@@ -28,7 +27,6 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Prison Policy Data Platform",
     type: "website",
-    // ✅ IMPORTANT: this will work once you add an og image route (I’ll give you that next)
     images: [
       {
         url: "/og.png",
@@ -64,11 +62,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* ✅ Global background + better typography */}
-      <body className="min-h-screen bg-[#f7f8fb] text-black antialiased">
+      <body className="min-h-screen antialiased">
         <SiteShell>
           {children}
-          {/* ✅ Keep bot inside shell so layout & stacking behave on mobile */}
+          {/* keep bot inside shell for stacking + mobile */}
           <ResearchBot />
         </SiteShell>
       </body>
