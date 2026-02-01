@@ -20,7 +20,7 @@ export function Surface({
   return (
     <div
       className={cx(
-        "rounded-3xl bg-white/5 ring-1 ring-white/10 shadow-soft p-6",
+        "rounded-3xl bg-white/6 ring-1 ring-white/10 shadow-[0_16px_70px_rgba(0,0,0,0.55)] p-6",
         className
       )}
     >
@@ -29,35 +29,21 @@ export function Surface({
   );
 }
 
-export const Card = Surface;
 
+export const Card = Surface;
 export function Kicker({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="text-xs uppercase tracking-widest text-white/55">
-      {children}
-    </div>
-  );
+  return <div className="text-xs uppercase tracking-widest text-white/55">{children}</div>;
 }
 
 export function H1({ children }: { children: React.ReactNode }) {
-  return (
-    <h1 className="mt-2 text-3xl md:text-5xl font-semibold tracking-tight text-white">
-      {children}
-    </h1>
-  );
+  return <h1 className="mt-2 text-3xl md:text-5xl font-semibold tracking-tight text-white">{children}</h1>;
 }
 
 export function H2({ children }: { children: React.ReactNode }) {
   return <h2 className="text-lg md:text-xl font-semibold text-white">{children}</h2>;
 }
 
-export function P({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+export function P({ children, className }: { children: React.ReactNode; className?: string }) {
   return <p className={cx("text-white/70 leading-relaxed", className)}>{children}</p>;
 }
 
