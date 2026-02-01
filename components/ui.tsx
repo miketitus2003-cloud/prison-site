@@ -20,7 +20,7 @@ export function Surface({
   return (
     <div
       className={cx(
-        "rounded-3xl bg-white/5 ring-1 ring-white/10 shadow-[0_16px_60px_rgba(0,0,0,0.35)] p-6",
+        "rounded-3xl bg-white/5 ring-1 ring-white/10 shadow-soft p-6",
         className
       )}
     >
@@ -28,6 +28,8 @@ export function Surface({
     </div>
   );
 }
+
+export const Card = Surface;
 
 export function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -76,10 +78,6 @@ export function Divider() {
   return <div className="my-6 h-px bg-white/10" />;
 }
 
-/**
- * Dark-theme-safe ButtonLink
- * Always readable on black background.
- */
 export function ButtonLink({
   href,
   children,
@@ -100,8 +98,8 @@ export function ButtonLink({
     variant === "primary"
       ? "bg-white text-black hover:opacity-90"
       : variant === "secondary"
-      ? "bg-white/10 text-white ring-1 ring-white/15 hover:bg-white/14"
-      : "bg-transparent text-white ring-1 ring-white/15 hover:bg-white/10";
+      ? "bg-white/10 text-white ring-1 ring-white/12 hover:bg-white/14"
+      : "bg-transparent text-white ring-1 ring-white/12 hover:bg-white/10";
 
   const cls = cx(base, styles, className);
 
@@ -119,8 +117,6 @@ export function ButtonLink({
     </Link>
   );
 }
-
-export const Card = Surface;
 
 export function SectionHeader({
   eyebrow,
