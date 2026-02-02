@@ -19,12 +19,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* selection */
 ::selection {
-  background: rgba(99, 102, 241, 0.25);
+  background: rgba(255, 255, 255, 0.16);
 }
 
-/* links */
 a {
   color: inherit;
   text-decoration: none;

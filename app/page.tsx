@@ -1,11 +1,12 @@
 // app/page.tsx
 import { Container, Card, Kicker, H1, H2, P, ButtonLink } from "@/components/ui";
 import { SITE } from "@/components/siteData";
+import { EDUCATION_EVIDENCE } from "@/components/educationData";
 
 export default function OverviewPage() {
   return (
     <div className="relative">
-      {/* Background photo */}
+      {/* Background photo (dark-first) */}
       <div className="absolute inset-0 -z-10">
         <img
           src="https://images.unsplash.com/photo-1520975958225-1a29f33a0bda?auto=format&fit=crop&w=2200&q=70"
@@ -13,45 +14,23 @@ export default function OverviewPage() {
           className="h-full w-full object-cover"
           loading="lazy"
         />
-
-        {/* Darken image for readability */}
-        <div className="absolute inset-0 bg-[#06080f]/80" />
-
-        {/* Subtle top glow (keeps it “premium”, still black) */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(900px 420px at 18% 0%, rgba(99,102,241,0.22), transparent 60%), radial-gradient(850px 360px at 85% 0%, rgba(56,189,248,0.18), transparent 60%)",
-          }}
-        />
-
-        {/* Fade to solid black at bottom so sections feel grounded */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#06080f]" />
+        {/* Dark overlay only (REMOVE white gradient) */}
+        <div className="absolute inset-0 bg-[#06080f]/82" />
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 via-sky-500/10 to-transparent" />
       </div>
 
       <Container>
         <div className="pt-12 sm:pt-16 pb-14">
           <div className="grid lg:grid-cols-12 gap-10 items-start">
-            {/* Left */}
             <div className="lg:col-span-7">
-              <div className="text-white/70">
-                <Kicker>{SITE.brand.subtitle}</Kicker>
-              </div>
-
-              {/* If your H1 component is still black, wrap it in a white text container */}
-              <div className="text-white">
-                <H1>{SITE.brand.title}</H1>
-              </div>
+              <Kicker>{SITE.brand.subtitle}</Kicker>
+              <H1>{SITE.brand.title}</H1>
 
               <div className="mt-4 max-w-2xl">
-                <P className="text-[15px] sm:text-base text-white/75">
-                  {SITE.overview.lead}
-                </P>
+                <P className="text-[15px] sm:text-base">{SITE.overview.lead}</P>
               </div>
 
-              {/* Mission / proof / CTAs */}
-              <div className="mt-6 rounded-3xl bg-white/6 ring-1 ring-white/12 p-5 shadow-[0_22px_70px_rgba(0,0,0,0.45)] backdrop-blur">
+              <div className="mt-6 rounded-3xl bg-white/6 ring-1 ring-white/10 p-5 shadow-[0_16px_70px_rgba(0,0,0,0.55)]">
                 <div className="text-xs uppercase tracking-widest text-white/55">
                   One-line mission
                 </div>
@@ -63,7 +42,7 @@ export default function OverviewPage() {
                   {SITE.overview.proofBullets.map((b) => (
                     <div
                       key={b}
-                      className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4"
+                      className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4"
                     >
                       <div className="text-sm text-white/80">{b}</div>
                     </div>
@@ -87,41 +66,77 @@ export default function OverviewPage() {
                 </div>
               </div>
 
-              {/* Recidivism definition */}
+              {/* Recidivism definition + why it matters */}
               <div className="mt-8 grid sm:grid-cols-2 gap-4">
-                <Card className="bg-white/6 ring-white/12 text-white">
-                  <div className="text-white">
-                    <H2>{SITE.glossary.recidivism.term}</H2>
-                  </div>
-                  <P className="mt-2 text-white/75">{SITE.glossary.recidivism.plain}</P>
+                <Card>
+                  <H2>{SITE.glossary.recidivism.term}</H2>
+                  <P className="mt-2">{SITE.glossary.recidivism.plain}</P>
                 </Card>
 
-                <Card className="bg-white/6 ring-white/12 text-white">
-                  <div className="text-white">
-                    <H2>Why it matters</H2>
-                  </div>
-                  <P className="mt-2 text-white/75">{SITE.glossary.recidivism.whyItMatters}</P>
+                <Card>
+                  <H2>Why it matters</H2>
+                  <P className="mt-2">{SITE.glossary.recidivism.whyItMatters}</P>
                 </Card>
+              </div>
+
+              {/* NEW: Education evidence */}
+              <div className="mt-6">
+                <Card className="bg-gradient-to-br from-indigo-500/10 via-white/5 to-sky-500/10">
+                  <H2>Education is a measurable reentry lever</H2>
+                  <P className="mt-2">
+                    Here are a few high-signal stats that show (1) the education gap in correctional populations
+                    and (2) why education access is a credible policy focus when your goal is safer communities and
+                    better reentry outcomes.
+                  </P>
+
+                  <div className="mt-5 grid sm:grid-cols-2 gap-3">
+                    {EDUCATION_EVIDENCE.highlights.slice(0, 4).map((h) => (
+                      <div key={h.label} className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
+                        <div className="text-xs uppercase tracking-widest text-white/55">{h.label}</div>
+                        <div className="mt-2 text-2xl font-semibold text-white">{h.value}</div>
+                        <div className="mt-2 text-sm text-white/70">{h.note}</div>
+                        <a
+                          className="mt-3 inline-block text-xs text-white/60 hover:text-white underline underline-offset-4"
+                          href={h.href}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Source: {h.sourceLabel}
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-5 rounded-2xl bg-white/5 ring-1 ring-white/10 p-4">
+                    <div className="text-sm font-semibold text-white">Interpretation rule</div>
+                    <div className="mt-2 text-sm text-white/70">
+                      {EDUCATION_EVIDENCE.plainLanguageTakeaway}
+                    </div>
+                    <ul className="mt-3 space-y-1 text-xs text-white/55 list-disc pl-5">
+                      {EDUCATION_EVIDENCE.disclaimers.map((d) => (
+                        <li key={d}>{d}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </Card>
+
+                <div className="mt-3 text-xs text-white/50">
+                  Background photo credit is listed on Sources.
+                </div>
               </div>
             </div>
 
-            {/* Right */}
             <div className="lg:col-span-5">
-              <Card className="bg-white/6 ring-white/12 text-white">
-                <div className="text-white">
-                  <H2>What to click</H2>
-                </div>
-
+              <Card>
+                <H2>What to click</H2>
                 <div className="mt-4 space-y-3">
                   {SITE.overview.guidedPath.map((x) => (
                     <a
                       key={x.href}
                       href={x.href}
-                      className="block rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 hover:bg-white/8 transition"
+                      className="block rounded-2xl bg-white/6 ring-1 ring-white/10 p-4 hover:bg-white/10 transition"
                     >
-                      <div className="text-sm font-semibold text-white">
-                        {x.label}
-                      </div>
+                      <div className="text-sm font-semibold text-white">{x.label}</div>
                       <div className="mt-1 text-sm text-white/65">
                         Fast path for skimming. Built for a 30–60 second reviewer.
                       </div>
@@ -136,15 +151,29 @@ export default function OverviewPage() {
                 </div>
               </Card>
 
-              <div className="mt-4 rounded-3xl bg-white/6 ring-1 ring-white/12 p-6 backdrop-blur">
+              <div className="mt-4 rounded-3xl bg-white/6 ring-1 ring-white/10 p-6">
                 <div className="text-sm font-semibold text-white">Positioning</div>
                 <div className="mt-2 text-sm text-white/70 leading-relaxed">
-                  This site is not advocating for crime. It focuses on documented injustice, transparent measurement, and practical policy choices that reduce harm and improve reentry outcomes.
+                  This platform is about safer communities and better outcomes: transparent measurement,
+                  evidence-first summaries, and practical policy choices that support rehabilitation and reentry.
                 </div>
               </div>
 
-              <div className="mt-4 text-xs text-white/45">
-                Background photo credit is listed on Sources.
+              {/* NEW: high-signal stat card */}
+              <div className="mt-4 rounded-3xl bg-white/6 ring-1 ring-white/10 p-6">
+                <div className="text-sm font-semibold text-white">Education & rearrest signal</div>
+                <div className="mt-2 text-sm text-white/70">
+                  In federal data summarized by the US Sentencing Commission, rearrest rates differ sharply by education:
+                  people without high school completion show much higher rearrest than those with a college degree.
+                </div>
+                <a
+                  className="mt-3 inline-block text-xs text-white/60 hover:text-white underline underline-offset-4"
+                  href="https://www.ussc.gov/sites/default/files/pdf/research-and-publications/research-publications/2016/recidivism_overview.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Source: USSC (2016) Recidivism Overview
+                </a>
               </div>
             </div>
           </div>

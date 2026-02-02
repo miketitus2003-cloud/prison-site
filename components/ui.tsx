@@ -6,10 +6,13 @@ function cx(...classes: Array<string | false | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+/* Layout wrappers */
+
 export function Container({ children }: { children: React.ReactNode }) {
   return <div className="max-w-6xl mx-auto px-4">{children}</div>;
 }
 
+// Dark surface by default (matches SiteShell dark background)
 export function Surface({
   children,
   className,
@@ -29,23 +32,39 @@ export function Surface({
   );
 }
 
+/* Typography */
 
-export const Card = Surface;
 export function Kicker({ children }: { children: React.ReactNode }) {
-  return <div className="text-xs uppercase tracking-widest text-white/55">{children}</div>;
+  return (
+    <div className="text-xs uppercase tracking-widest text-white/55">
+      {children}
+    </div>
+  );
 }
 
 export function H1({ children }: { children: React.ReactNode }) {
-  return <h1 className="mt-2 text-3xl md:text-5xl font-semibold tracking-tight text-white">{children}</h1>;
+  return (
+    <h1 className="mt-2 text-3xl md:text-5xl font-semibold tracking-tight text-white">
+      {children}
+    </h1>
+  );
 }
 
 export function H2({ children }: { children: React.ReactNode }) {
   return <h2 className="text-lg md:text-xl font-semibold text-white">{children}</h2>;
 }
 
-export function P({ children, className }: { children: React.ReactNode; className?: string }) {
+export function P({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <p className={cx("text-white/70 leading-relaxed", className)}>{children}</p>;
 }
+
+/* Lists, dividers, buttons */
 
 export function Bullets({ items }: { items: string[] }) {
   return (
@@ -64,6 +83,9 @@ export function Divider() {
   return <div className="my-6 h-px bg-white/10" />;
 }
 
+/**
+ * Dark-theme-safe button variants
+ */
 export function ButtonLink({
   href,
   children,
@@ -103,6 +125,10 @@ export function ButtonLink({
     </Link>
   );
 }
+
+/* Backwards compatible exports */
+
+export const Card = Surface;
 
 export function SectionHeader({
   eyebrow,

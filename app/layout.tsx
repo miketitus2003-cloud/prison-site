@@ -45,18 +45,19 @@ export const metadata: Metadata = {
     images: ["/og.png"],
   },
 
-  alternates: { canonical: SITE_URL },
-  robots: { index: true, follow: true },
+  alternates: {
+    canonical: SITE_URL,
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* IMPORTANT: do NOT put a light bg class here */}
       <body className="min-h-screen bg-[#06080f] text-white antialiased">
         <SiteShell>
           {children}
