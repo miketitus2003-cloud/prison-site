@@ -49,5 +49,3 @@ To run this project:
 
 ##  Author
 Michael Parham  
-Information Science  
-University of Maryland, College Park  
