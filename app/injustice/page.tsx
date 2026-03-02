@@ -1,5 +1,6 @@
 // app/injustice/page.tsx
-import { Container, Kicker, H1, P, Badge, ButtonLink, Callout } from "@/components/ui";
+import { Container, Card, Kicker, H1, H2, P, ButtonLink, Divider } from "@/components/ui";
+import PageFade from "@/components/PageFade";
 
 const TOPICS = [
   {
@@ -15,7 +16,7 @@ const TOPICS = [
     points: [
       "Isolation is linked to serious psychological harm, especially for youth",
       "Oversight and strict limits are common best practice recommendations",
-      "Step down programming and clinical care are practical alternatives",
+      "Step-down programming and clinical care are practical alternatives",
     ],
   },
   {
@@ -38,55 +39,53 @@ const TOPICS = [
 
 export default function TopicsPage() {
   return (
+    <PageFade>
     <Container>
       <div className="pt-12 sm:pt-16 pb-12">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="accent">Topics</Badge>
-          <Badge tone="neutral">Context pages</Badge>
-        </div>
-
+        <Kicker>Context</Kicker>
         <H1>Injustice and policy context</H1>
 
         <div className="mt-4 max-w-3xl">
           <P>
-            These pages give context for the research and policy briefs. The goal is evidence first discussion, not advocacy for crime.
+            These pages give context for the research and policy briefs. The goal is evidence-first discussion.
+            For numbers, see Dashboard. For citations, see Sources.
           </P>
-        </div>
-
-        <div className="mt-6">
-          <Callout title="How to use this section" tone="neutral">
-            If you want numbers, go to Stats Lab. If you want citations, go to Sources. This page is context and framing.
-          </Callout>
         </div>
 
         <div className="mt-8 grid lg:grid-cols-2 gap-6">
           {TOPICS.map((t) => (
-            <div key={t.title} className="rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-6">
-              <div className="text-lg font-semibold text-black">{t.title}</div>
-              <ul className="mt-3 text-sm text-black/70 space-y-2">
+            <Card key={t.title}>
+              <H2>{t.title}</H2>
+              <ul className="mt-3 space-y-2 text-sm text-white/70">
                 {t.points.map((p) => (
-                  <li key={p}>• {p}</li>
+                  <li key={p} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-white/45 flex-shrink-0" />
+                    <span>{p}</span>
+                  </li>
                 ))}
               </ul>
-              <div className="mt-5 flex flex-wrap gap-3">
+              <Divider />
+              <div className="flex flex-wrap gap-3">
                 <ButtonLink href="/stats" variant="secondary">
-                  Stats Lab
+                  Dashboard
                 </ButtonLink>
                 <ButtonLink href="/sources" variant="ghost">
                   Sources
                 </ButtonLink>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
 
-        <div className="mt-10 rounded-3xl bg-neutral-50 ring-1 ring-black/10 p-6">
-          <div className="text-sm font-semibold text-black">Next upgrade</div>
-          <div className="mt-2 text-sm text-black/70">
-            If you want, we can add a separate page per topic with one verified stat card and 2 to 3 sources each.
+        <div className="mt-10 rounded-3xl bg-white/5 ring-1 ring-white/10 p-6">
+          <div className="text-sm font-semibold text-white">Context note</div>
+          <div className="mt-2 text-sm text-white/70">
+            This section provides framing for the quantitative work on other pages.
+            All statistical claims should be verified via Sources and linked primary documents.
           </div>
         </div>
       </div>
     </Container>
+    </PageFade>
   );
 }
