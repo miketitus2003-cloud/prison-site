@@ -46,14 +46,14 @@ export default function AboutPage() {
             <div className="lg:col-span-7 space-y-6">
               <Surface>
                 <H2>The mission</H2>
-                <div className=”mt-3 space-y-3”>
+                <div className="mt-3 space-y-3">
                   <P>
-                    <span className=”font-semibold text-white”>One-line:</span>{“ “}
+                    <span className="font-semibold text-white">One-line:</span>{" "}
                     {SITE.brand.mission}
                   </P>
                   <P>
                     The goal is to show that I can take messy public reporting,
-                    extract the signal, explain the “so what,” and ship a
+                    extract the signal, explain the "so what," and ship a
                     polished product with credibility rules.
                   </P>
                 </div>
@@ -96,30 +96,30 @@ export default function AboutPage() {
                 </div>
               </Surface>
 
-              <Surface className=”bg-gradient-to-br from-indigo-500/15 via-white/5 to-sky-500/15”>
-                <H2>”Trust in 60 seconds” standard</H2>
-                <div className=”mt-3 space-y-3”>
+              <Surface className="bg-gradient-to-br from-indigo-500/15 via-white/5 to-sky-500/15">
+                <H2>"Trust in 60 seconds" standard</H2>
+                <div className="mt-3 space-y-3">
                   <P>
-                    <span className=”font-semibold text-white”>10 seconds:</span>{“ “}
+                    <span className="font-semibold text-white">10 seconds:</span>{" "}
                     you understand what this is and what I built.
                   </P>
                   <P>
-                    <span className=”font-semibold text-white”>30 seconds:</span>{“ “}
+                    <span className="font-semibold text-white">30 seconds:</span>{" "}
                     you can verify key claims via Sources + linked BJS docs.
                   </P>
                   <P>
-                    <span className=”font-semibold text-white”>60 seconds:</span>{“ “}
+                    <span className="font-semibold text-white">60 seconds:</span>{" "}
                     you trust the interpretation because the site enforces
-                    “association, not causation,” and shows limits up front.
+                    "association, not causation," and shows limits up front.
                   </P>
                 </div>
 
                 <Divider />
 
-                <div className=”text-xs uppercase tracking-widest text-white/55”>
+                <div className="text-xs uppercase tracking-widest text-white/55">
                   Verification rule
                 </div>
-                <P className=”mt-2”>
+                <P className="mt-2">
                   Every chart is descriptive and source-linked. No causal claims.
                   Claims are mapped to citations on the Sources page.
                 </P>
