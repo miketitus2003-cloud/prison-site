@@ -1,5 +1,5 @@
 // components/PolicyBriefCard.tsx
-import { ButtonLink, Badge } from "@/components/ui";
+import { ButtonLink } from "@/components/ui";
 
 export default function PolicyBriefCard({
   title,
@@ -23,57 +23,62 @@ export default function PolicyBriefCard({
   success: string[];
 }) {
   return (
-    <div className="rounded-3xl bg-white ring-1 ring-black/10 shadow-soft p-6">
+    <div className="rounded-3xl bg-white/6 ring-1 ring-white/10 shadow-[0_16px_70px_rgba(0,0,0,0.55)] p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="text-lg font-semibold text-black">{title}</div>
-        <Badge tone="neutral">Policy brief</Badge>
+        <div className="text-lg font-semibold text-white">{title}</div>
+        <span className="text-xs px-2 py-1 rounded-full bg-sky-500/20 text-sky-300 ring-1 ring-sky-500/30">
+          Policy brief
+        </span>
       </div>
 
-      <div className="mt-3 text-sm text-black/70 leading-relaxed">{oneLine}</div>
+      <div className="mt-3 text-sm text-white/70 leading-relaxed">{oneLine}</div>
 
       <div className="mt-4 grid lg:grid-cols-12 gap-5">
         <div className="lg:col-span-7">
-          <div className="text-xs uppercase tracking-widest text-black/50">Strong points</div>
-          <ul className="mt-2 text-sm text-black/70 space-y-2">
+          <div className="text-xs uppercase tracking-widest text-white/50">Key points</div>
+          <ul className="mt-2 text-sm text-white/70 space-y-2">
             {bullets.map((b) => (
-              <li key={b}>• {b}</li>
+              <li key={b} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-white/40 flex-shrink-0" />
+                <span>{b}</span>
+              </li>
             ))}
           </ul>
 
-          <div className="mt-4 rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-            <div className="text-xs uppercase tracking-widest text-black/50">Bottom line</div>
-            <div className="mt-1 text-sm text-black/80">{bottomLine}</div>
+          <div className="mt-4 rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
+            <div className="text-xs uppercase tracking-widest text-white/50">Bottom line</div>
+            <div className="mt-1 text-sm text-white/80">{bottomLine}</div>
           </div>
         </div>
 
         <div className="lg:col-span-5">
-          <div className="text-xs uppercase tracking-widest text-black/50">Decision memo</div>
+          <div className="text-xs uppercase tracking-widest text-white/50">Decision memo</div>
           <div className="mt-2 space-y-3">
-            <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-              <div className="text-sm font-semibold text-black">Owner</div>
-              <div className="text-sm text-black/70 mt-1">{owner}</div>
+            <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
+              <div className="text-sm font-semibold text-white">Owner</div>
+              <div className="text-sm text-white/70 mt-1">{owner}</div>
             </div>
-            <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-              <div className="text-sm font-semibold text-black">Cost</div>
-              <div className="text-sm text-black/70 mt-1">{cost}</div>
+            <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
+              <div className="text-sm font-semibold text-white">Cost</div>
+              <div className="text-sm text-white/70 mt-1">{cost}</div>
             </div>
-            <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-              <div className="text-sm font-semibold text-black">Timeline</div>
-              <div className="text-sm text-black/70 mt-1">{timeline}</div>
+            <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
+              <div className="text-sm font-semibold text-white">Timeline</div>
+              <div className="text-sm text-white/70 mt-1">{timeline}</div>
             </div>
 
-            <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-              <div className="text-sm font-semibold text-black">Risks</div>
-              <ul className="text-sm text-black/70 mt-1 space-y-1">
+            <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
+              <div className="text-sm font-semibold text-white">Risks</div>
+              <ul className="text-sm text-white/70 mt-1 space-y-1">
                 {risks.map((r) => (
                   <li key={r}>• {r}</li>
                 ))}
               </ul>
             </div>
 
-            <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
-              <div className="text-sm font-semibold text-black">Measure success</div>
-              <ul className="text-sm text-black/70 mt-1 space-y-1">
+            <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
+              <div className="text-sm font-semibold text-white">Measure success</div>
+              <ul className="text-sm text-white/70 mt-1 space-y-1">
                 {success.map((s) => (
                   <li key={s}>• {s}</li>
                 ))}
