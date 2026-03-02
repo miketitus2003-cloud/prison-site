@@ -1,10 +1,8 @@
 import { Container, Card, Kicker, H1, H2, P, Bullets, Divider, ButtonLink } from "@/components/ui";
 import { SITE } from "@/components/siteData";
-import PageFade from "@/components/PageFade";
 
 export default function PolicyPage() {
   return (
-    <PageFade>
     <div className="relative">
       <div className="absolute inset-0 -z-10">
         <img
@@ -13,8 +11,8 @@ export default function PolicyPage() {
           className="h-full w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-[#06080f]/90" />
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-500/8 via-transparent to-[#06080f]" />
+        <div className="absolute inset-0 bg-white/88" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/88 to-[#f7f8fb]" />
       </div>
 
       <Container>
@@ -30,40 +28,40 @@ export default function PolicyPage() {
 
           <div className="mt-8 grid lg:grid-cols-2 gap-6">
             {SITE.policy.map((p) => (
-              <Card key={p.title}>
+              <Card key={p.title} className="bg-white/90">
                 <H2>{p.title}</H2>
                 <P className="mt-3">{p.oneLine}</P>
 
                 <Divider />
 
-                <div className="text-xs uppercase tracking-widest text-white/50">Key points</div>
+                <div className="text-xs uppercase tracking-widest text-black/50">Strong points</div>
                 <Bullets items={p.bullets} />
 
                 <Divider />
 
-                <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
-                  <div className="text-xs uppercase tracking-widest text-white/50">Bottom line</div>
-                  <div className="mt-2 text-sm font-semibold text-white">{p.bottomLine}</div>
+                <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                  <div className="text-xs uppercase tracking-widest text-black/50">Bottom line</div>
+                  <div className="mt-2 text-sm font-semibold text-black">{p.bottomLine}</div>
                 </div>
 
                 <Divider />
 
-                <div className="text-xs uppercase tracking-widest text-white/50">Decision memo</div>
-                <div className="mt-3 grid sm:grid-cols-2 gap-3 text-sm text-white/70">
-                  <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
-                    <div className="text-xs uppercase tracking-widest text-white/50">Owner</div>
+                <div className="text-xs uppercase tracking-widest text-black/50">Decision memo</div>
+                <div className="mt-3 grid sm:grid-cols-2 gap-3 text-sm text-black/70">
+                  <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                    <div className="text-xs uppercase tracking-widest text-black/50">Owner</div>
                     <div className="mt-2">{p.memo.owner}</div>
                   </div>
-                  <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
-                    <div className="text-xs uppercase tracking-widest text-white/50">Cost</div>
+                  <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                    <div className="text-xs uppercase tracking-widest text-black/50">Cost</div>
                     <div className="mt-2">{p.memo.cost}</div>
                   </div>
-                  <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
-                    <div className="text-xs uppercase tracking-widest text-white/50">Timeline</div>
+                  <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                    <div className="text-xs uppercase tracking-widest text-black/50">Timeline</div>
                     <div className="mt-2">{p.memo.timeline}</div>
                   </div>
-                  <div className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
-                    <div className="text-xs uppercase tracking-widest text-white/50">Risks</div>
+                  <div className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                    <div className="text-xs uppercase tracking-widest text-black/50">Risks</div>
                     <ul className="mt-2 space-y-1">
                       {p.memo.risks.map((r) => (
                         <li key={r}>• {r}</li>
@@ -72,9 +70,9 @@ export default function PolicyPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 rounded-2xl bg-white/6 ring-1 ring-white/10 p-4">
-                  <div className="text-xs uppercase tracking-widest text-white/50">Success metrics</div>
-                  <ul className="mt-2 space-y-1 text-sm text-white/70">
+                <div className="mt-4 rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4">
+                  <div className="text-xs uppercase tracking-widest text-black/50">Success metrics</div>
+                  <ul className="mt-2 space-y-1 text-sm text-black/70">
                     {p.memo.successMetrics.map((m) => (
                       <li key={m}>• {m}</li>
                     ))}
@@ -93,12 +91,11 @@ export default function PolicyPage() {
             ))}
           </div>
 
-          <div className="mt-10 text-xs text-white/40">
+          <div className="mt-10 text-xs text-black/45">
             Background photo credit is listed on Sources.
           </div>
         </div>
       </Container>
     </div>
-    </PageFade>
   );
 }
