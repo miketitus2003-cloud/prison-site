@@ -58,12 +58,16 @@ export default function ResearchBot() {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (!open) return;
-      if (e.key === "Escape") setOpen(false);
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        inputRef.current?.focus();
+        if (!open) {
+          setOpen(true);
+        } else {
+          inputRef.current?.focus();
+        }
+        return;
       }
+      if (e.key === "Escape" && open) setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

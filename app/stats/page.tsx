@@ -1,6 +1,9 @@
+"use client";
+
 import { Container, Kicker, H1, P } from "@/components/ui";
 import { BJS2012, BJS2018 } from "@/components/statsData";
 import { BarChart, DonutChart, LineChart, StatCard } from "@/components/StatsCharts";
+import PageFade from "@/components/PageFade";
 import React from "react";
 
 function pctShare(count: number, total: number) {
@@ -39,6 +42,7 @@ export default function StatsPage() {
   const csvHref = `data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`;
 
   return (
+    <PageFade>
     <div className="relative">
       {/* Background photo */}
       <div className="absolute inset-0 -z-10">
@@ -48,8 +52,8 @@ export default function StatsPage() {
           className="h-full w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-[#06080f]/75" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/88 to-[#f7f8fb]" />
+        <div className="absolute inset-0 bg-[#06080f]/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-500/8 via-transparent to-[#06080f]" />
       </div>
 
       <Container>
@@ -69,8 +73,8 @@ export default function StatsPage() {
               onClick={() => setView("time")}
               className={`px-3 py-2 rounded-full text-sm font-semibold ring-1 transition ${
                 view === "time"
-                  ? "bg-black text-white ring-black/10"
-                  : "bg-white text-black/70 ring-black/10 hover:bg-neutral-50"
+                  ? "bg-white text-neutral-950 ring-white/10"
+                  : "bg-white/8 text-white/70 ring-white/12 hover:bg-white/14"
               }`}
             >
               Recidivism over time
@@ -79,19 +83,19 @@ export default function StatsPage() {
               onClick={() => setView("breakdowns")}
               className={`px-3 py-2 rounded-full text-sm font-semibold ring-1 transition ${
                 view === "breakdowns"
-                  ? "bg-black text-white ring-black/10"
-                  : "bg-white text-black/70 ring-black/10 hover:bg-neutral-50"
+                  ? "bg-white text-neutral-950 ring-white/10"
+                  : "bg-white/8 text-white/70 ring-white/12 hover:bg-white/14"
               }`}
             >
               Breakdown charts
             </button>
 
             <a
-              className="ml-auto px-3 py-2 rounded-full text-sm font-semibold bg-white ring-1 ring-black/10 hover:bg-neutral-50 transition"
+              className="ml-auto px-3 py-2 rounded-full text-sm font-semibold bg-white/8 text-white/80 ring-1 ring-white/12 hover:bg-white/14 transition"
               href={csvHref}
               download="bjs_2012_cumulative_arrest.csv"
             >
-              Download CSV
+              ↓ Download CSV
             </a>
           </div>
 
@@ -113,18 +117,18 @@ export default function StatsPage() {
             />
           </div>
 
-          <div className="mt-4 text-xs text-black/55">
+          <div className="mt-4 text-xs text-white/50">
             Method note: these charts are descriptive summaries. They do not imply causation.
           </div>
 
           {view === "time" ? (
             <div className="mt-8 space-y-6">
-              <div className="rounded-3xl bg-white/90 ring-1 ring-black/10 p-5">
-                <div className="text-sm font-semibold text-black">Key pattern</div>
-                <div className="mt-1 text-sm text-black/70">
+              <div className="rounded-3xl bg-white/6 ring-1 ring-white/10 p-5">
+                <div className="text-sm font-semibold text-white">Key pattern</div>
+                <div className="mt-1 text-sm text-white/70">
                   The cumulative arrest curve rises quickly in year 1 and keeps increasing through year 5 in the 2012 cohort.
                 </div>
-                <div className="mt-1 text-xs text-black/50">
+                <div className="mt-1 text-xs text-white/50">
                   What this is: cumulative arrest after release. What this is not: a causal estimate of why arrests happen.
                 </div>
               </div>
@@ -184,9 +188,9 @@ export default function StatsPage() {
                 />
               </div>
 
-              <div className="mt-6 rounded-3xl bg-white/90 ring-1 ring-black/10 p-6">
-                <div className="text-sm font-semibold text-black">Interpretation rule</div>
-                <div className="mt-2 text-sm text-black/70">
+              <div className="mt-6 rounded-3xl bg-white/6 ring-1 ring-white/10 p-6">
+                <div className="text-sm font-semibold text-white">Interpretation rule</div>
+                <div className="mt-2 text-sm text-white/70">
                   These charts describe reported patterns. They do not prove that any single factor causes recidivism.
                   The purpose is to make the reporting legible and verifiable.
                 </div>
@@ -194,12 +198,13 @@ export default function StatsPage() {
             </>
           )}
 
-          <div className="mt-10 rounded-3xl bg-neutral-50 ring-1 ring-black/10 p-6">
-            <div className="text-sm font-semibold text-black">Sources</div>
-            <div className="mt-2 text-sm text-black/70 leading-relaxed">
+          <div className="mt-10 rounded-3xl bg-white/6 ring-1 ring-white/10 p-6">
+            <div className="text-xs uppercase tracking-widest text-white/55 mb-2">Data sources</div>
+            <div className="text-sm font-semibold text-white">Sources</div>
+            <div className="mt-2 text-sm text-white/70 leading-relaxed">
               BJS (2017) Recidivism of Prisoners Released in 34 States in 2012 (PDF):{" "}
               <a
-                className="underline"
+                className="underline underline-offset-4 hover:text-white transition"
                 href="https://bjs.ojp.gov/sites/g/files/xyckuh236/files/media/document/rpr34s125yfup1217.pdf"
                 target="_blank"
                 rel="noreferrer"
@@ -209,7 +214,7 @@ export default function StatsPage() {
               <br />
               BJS (2018) 9-year follow-up update page:{" "}
               <a
-                className="underline"
+                className="underline underline-offset-4 hover:text-white transition"
                 href="https://bjs.ojp.gov/library/publications/2018-update-prisoner-recidivism-9-year-follow-period-2005-2014"
                 target="_blank"
                 rel="noreferrer"
@@ -219,11 +224,12 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="mt-3 text-xs text-black/45">
+          <div className="mt-3 text-xs text-white/40">
             Background photo credit is listed on Sources.
           </div>
         </div>
       </Container>
     </div>
+    </PageFade>
   );
 }

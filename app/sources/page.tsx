@@ -1,5 +1,6 @@
 // app/sources/page.tsx
 import { Container, Card, Kicker, H1, H2, P, Divider } from "@/components/ui";
+import PageFade from "@/components/PageFade";
 
 const SOURCES = [
   {
@@ -38,6 +39,7 @@ const SOURCES = [
 
 export default function SourcesPage() {
   return (
+    <PageFade>
     <Container>
       <div className="pt-12 md:pt-16 pb-12">
         <Kicker>Sources</Kicker>
@@ -103,5 +105,6 @@ export default function SourcesPage() {
         </div>
       </div>
     </Container>
+    </PageFade>
   );
 }

@@ -10,9 +10,11 @@ import {
   Divider,
 } from "@/components/ui";
 import { SITE } from "@/components/siteData";
+import PageFade from "@/components/PageFade";
 
 export default function AboutPage() {
   return (
+    <PageFade>
     <div className="relative">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
@@ -22,8 +24,8 @@ export default function AboutPage() {
           className="h-full w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-[#06080f]/75" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/90 to-[#f7f8fb]" />
+        <div className="absolute inset-0 bg-[#06080f]/88" />
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/8 via-transparent to-[#06080f]" />
       </div>
 
       <Container>
@@ -42,11 +44,11 @@ export default function AboutPage() {
           <div className="mt-10 grid lg:grid-cols-12 gap-6">
             {/* Left column */}
             <div className="lg:col-span-7 space-y-6">
-              <Surface className="bg-[#06080f]/75">
+              <Surface>
                 <H2>The mission</H2>
-                <div className="mt-3 space-y-3">
-                  <P className="text-black">
-                    <span className="font-semibold">One-line:</span>{" "}
+                <div className=”mt-3 space-y-3”>
+                  <P>
+                    <span className=”font-semibold text-white”>One-line:</span>{“ “}
                     {SITE.brand.mission}
                   </P>
                   <P>
@@ -61,22 +63,22 @@ export default function AboutPage() {
                 <H2>What’s included</H2>
                 <div className="mt-3 space-y-3">
                   <P>
-                    <span className="font-semibold text-black">Dashboard</span>{" "}
+                    <span className="font-semibold text-white">Dashboard</span>{" "}
                     — BJS-derived visuals, filters, and small disclaimers that
                     keep interpretation honest.
                   </P>
                   <P>
-                    <span className="font-semibold text-black">Insights</span>{" "}
+                    <span className="font-semibold text-white">Insights</span>{" "}
                     — research framing, method, results snapshot, limitations,
                     and a model card.
                   </P>
                   <P>
-                    <span className="font-semibold text-black">Policy briefs</span>{" "}
+                    <span className="font-semibold text-white">Policy briefs</span>{" "}
                     — decision memos: Owner, Cost, Timeline, Risks, Success
                     metrics.
                   </P>
                   <P>
-                    <span className="font-semibold text-black">Sources</span>{" "}
+                    <span className="font-semibold text-white">Sources</span>{" "}
                     — claim → source mapping with quality labels.
                   </P>
                 </div>
@@ -94,19 +96,19 @@ export default function AboutPage() {
                 </div>
               </Surface>
 
-              <Surface className="bg-gradient-to-br from-indigo-50 via-white to-sky-50">
-                <H2>“Trust in 60 seconds” standard</H2>
-                <div className="mt-3 space-y-3">
+              <Surface className=”bg-gradient-to-br from-indigo-500/15 via-white/5 to-sky-500/15”>
+                <H2>”Trust in 60 seconds” standard</H2>
+                <div className=”mt-3 space-y-3”>
                   <P>
-                    <span className="font-semibold text-black">10 seconds:</span>{" "}
+                    <span className=”font-semibold text-white”>10 seconds:</span>{“ “}
                     you understand what this is and what I built.
                   </P>
                   <P>
-                    <span className="font-semibold text-black">30 seconds:</span>{" "}
+                    <span className=”font-semibold text-white”>30 seconds:</span>{“ “}
                     you can verify key claims via Sources + linked BJS docs.
                   </P>
                   <P>
-                    <span className="font-semibold text-black">60 seconds:</span>{" "}
+                    <span className=”font-semibold text-white”>60 seconds:</span>{“ “}
                     you trust the interpretation because the site enforces
                     “association, not causation,” and shows limits up front.
                   </P>
@@ -114,16 +116,16 @@ export default function AboutPage() {
 
                 <Divider />
 
-                <div className="text-xs uppercase tracking-widest text-black/50">
+                <div className=”text-xs uppercase tracking-widest text-white/55”>
                   Verification rule
                 </div>
-                <P className="mt-2">
+                <P className=”mt-2”>
                   Every chart is descriptive and source-linked. No causal claims.
                   Claims are mapped to citations on the Sources page.
                 </P>
               </Surface>
 
-              <Surface className="bg-[#06080f]/75">
+              <Surface>
                 <H2>Skills demonstrated (ATS-friendly)</H2>
                 <div className="mt-4 grid sm:grid-cols-2 gap-3">
                   {[
@@ -136,9 +138,9 @@ export default function AboutPage() {
                   ].map((x) => (
                     <div
                       key={x}
-                      className="rounded-2xl bg-neutral-50 ring-1 ring-black/10 p-4"
+                      className="rounded-2xl bg-white/6 ring-1 ring-white/10 p-4"
                     >
-                      <div className="text-sm text-black/80">{x}</div>
+                      <div className="text-sm text-white/80">{x}</div>
                     </div>
                   ))}
                 </div>
@@ -147,7 +149,7 @@ export default function AboutPage() {
 
             {/* Right column */}
             <div className="lg:col-span-5 space-y-6">
-              <Surface className="bg-[#06080f]/75">
+              <Surface>
                 <H2>Author</H2>
                 <div className="mt-3 space-y-3">
                   <P>
@@ -162,7 +164,7 @@ export default function AboutPage() {
 
                 <Divider />
 
-                <div className="text-xs uppercase tracking-widest text-black/50">
+                <div className="text-xs uppercase tracking-widest text-white/55">
                   Quick links
                 </div>
                 <div className="mt-3 flex flex-wrap gap-3">
@@ -178,7 +180,7 @@ export default function AboutPage() {
                 </div>
               </Surface>
 
-              <Surface className="bg-[#06080f]/75">
+              <Surface>
                 <H2>Notes for reviewers</H2>
                 <div className="mt-3 space-y-3">
                   <P>
@@ -186,7 +188,7 @@ export default function AboutPage() {
                     Dashboard shows patterns; Insights explains method and limits;
                     Sources enables fast verification.
                   </P>
-                  <P className="text-black/60 text-sm">
+                  <P className="text-white/55 text-sm">
                     Background photo credit is listed on Sources.
                   </P>
                 </div>
@@ -196,5 +198,6 @@ export default function AboutPage() {
         </div>
       </Container>
     </div>
+    </PageFade>
   );
 }
